@@ -62,12 +62,12 @@ with st.sidebar:
     speed_steps = st.slider("Months per tick", 1, 12, 1)
     
     if autoplay:
-    # Advance multiple months automatically
-    for _ in range(speed_steps):
-        # If a cabinet crisis is active, automatically resolve it using Option 1 so it never blocks
-        if state.get("active_dilemma") is not None:
-            from engine.events import resolve_dilemma
-            resolve_dilemma(state, 0)
+        # Advance multiple months automatically
+        for _ in range(speed_steps):
+            # If a cabinet crisis is active, automatically resolve it using Option 1 so it never blocks
+            if state.get("active_dilemma") is not None:
+                from engine.events import resolve_dilemma
+                resolve_dilemma(state, 0)
         
         # Advance multiple months automatically
         for _ in range(speed_steps):
