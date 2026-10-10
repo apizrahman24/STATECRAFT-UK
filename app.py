@@ -173,35 +173,39 @@ with tab3:
     st.subheader("Devolved Administrations & Intergovernmental Relations")
     st.caption("Manage relations and unrest with Holyrood, the Senedd, and Stormont to prevent regional crises.")
     
-    for nation, data in state["devolved_nations"].items():
-        with st.container(border=True):
-            st.markdown(f"### 🗺️ {nation}")
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                rel_val = data['relations']
-                rel_color = "🟢 Stable" if rel_val > 60 else ("🟡 Strained" if rel_val > 40 else "🔴 Hostile")
-                st.metric("Relations Score", f"{rel_val}/100", delta=rel_color)
-                st.progress(max(0, min(100, rel_val)) / 100)
-            with col2:
-                unrest_val = data['unrest']
-                unrest_color = "🟢 Calm" if unrest_val < 30 else ("🟡 Restless" if unrest_val < 60 else "🔴 Critical")
-                st.metric("Unrest Index", f"{unrest_val}%", delta=unrest_color, delta_color="inverse")
-                st.progress(max(0, min(100, unrest_val)) / 100)
-            
-            st.markdown("#### ⚡ Intergovernmental Actions")
-            act_cols = st.columns(len(DEVOLVED_ACTIONS))
-            for a_idx, (act_name, act_data) in enumerate(DEVOLVED_ACTIONS.items()):
-                with act_cols[a_idx]:
-                    st.caption(f"Cost: £{act_data['cost_headroom']}bn")
-                    if st.button(act_name, key=f"dev_{nation}_{a_idx}", use_container_width=True):
+    dev_items = list(state["devolved_nations"].items())
+    d_cols = st.columns(len(dev_items))
+    
+    for idx, (nation, data) in enumerate(dev_items):
+        with d_cols[idx]:
+            with st.container(border=True):
+                st.markdown(f"### 🗺️ {nation}")
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    rel_val = data['relations']
+                    rel_color = "🟢 Stable" if rel_val > 60 else ("🟡 Strained" if rel_val > 40 else "🔴 Hostile")
+                    st.metric("Relations", f"{rel_val}/100", delta=rel_color)
+                    st.progress(max(0, min(100, rel_val)) / 100)
+                with col2:
+                    unrest_val = data['unrest']
+                    unrest_color = "🟢 Calm" if unrest_val < 30 else ("🟡 Restless" if unrest_val < 60 else "🔴 Critical")
+                    st.metric("Unrest", f"{unrest_val}%", delta=unrest_color, delta_color="inverse")
+                    st.progress(max(0, min(100, unrest_val)) / 100)
+                
+                st.markdown("---")
+                st.markdown("#### ⚡ Intergovernmental Actions")
+                
+                for a_idx, (act_name, act_data) in enumerate(DEVOLVED_ACTIONS.items()):
+                    st.caption(f"**{act_name}** • Cost: £{act_data['cost_headroom']}bn")
+                    if st.button(f"Execute", key=f"dev_{idx}_{a_idx}", use_container_width=True):
                         success = apply_devolved_action(game, nation, act_name)
                         if success:
-                            st.success(f"Executed {act_name} for {nation}.")
+                            st.success(f"Executed for {nation}.")
                             st.rerun()
                         else:
                             st.error("Insufficient Fiscal Headroom!")
-        st.divider()
+                    st.write("")
 
 with tab4:
     st.subheader("National Economic & Stability Trends")
