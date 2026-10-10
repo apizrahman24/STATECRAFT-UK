@@ -63,6 +63,132 @@ COMPLEX_UK_DILEMMAS = [
                 "effects": {"metrics.government_stability": 6.0, "devolved_nations.Scotland (Holyrood).unrest": 30}
             }
         ]
+    },
+    {
+        "id": "uk_dil_sovereign_grant",
+        "title": "Royal Friction: Sovereign Grant & Palatial Retrofit",
+        "description": "Buckingham Palace formally submits a request for an emergency 40% uplift to the Sovereign Grant to fund critical asbestos removal and green energy retrofits.",
+        "choices": [
+            {
+                "label": "Approve Full Sovereign Grant Increase",
+                "elaboration": "Instruct the Treasury to sign off on the increased royal funding settlement without parliamentary delay.",
+                "pros": "Preserves royal goodwill and institutional harmony.",
+                "cons": "Sparks public anger amid cost-of-living pressures (**Public Support -6.0**, **Headroom -£1.5bn**).",
+                "effects": {"metrics.public_support": -6.0, "metrics.fiscal_headroom": -1.5, "metrics.media_sentiment": -4.0}
+            },
+            {
+                "label": "Reject Increase & Demand Cost-Cutting",
+                "elaboration": "Block the funding request at the Treasury dispatch box, advising the Royal Household to draw from private estate reserves.",
+                "pros": "Appases anti-monarchist backbenchers and protects Treasury funds.",
+                "cons": "Strains relations with the Sovereign, leading to constitutional friction.",
+                "effects": {"metrics.fiscal_headroom": 1.0, "metrics.public_support": 3.0, "metrics.media_sentiment": -5.0}
+            }
+        ]
+    },
+    {
+        "id": "uk_dil_royal_assent_veto",
+        "title": "Constitutional Crisis: Controversial Bill & Royal Assent",
+        "description": "Your flagship public order bill passes through Parliament, but rumors leak that the King harbors deep reservations and might withhold Royal Assent.",
+        "choices": [
+            {
+                "label": "Issue Strict Constitutional Ultimatum to the Palace",
+                "elaboration": "Dispatch the Cabinet Secretary to remind Palace officials that the convention of binding Royal Assent has remained absolute since 1707.",
+                "pros": "Defends parliamentary sovereignty and executive primacy (**Government Stability +5.0**).",
+                "cons": "Alienates the monarch and sparks establishment media panic (**Media Sentiment -10.0**).",
+                "effects": {"metrics.government_stability": 5.0, "metrics.media_sentiment": -10.0, "metrics.legitimacy": -4.0}
+            },
+            {
+                "label": "Amend the Bill to Accommodate Royal Concerns",
+                "elaboration": "Quietly pause the legislation's final stages to negotiate compromise amendments satisfying royal legal advisers.",
+                "pros": "Averts a historic constitutional showdown.",
+                "cons": "Weakens political authority and enrages radical backbenchers (**Government Stability -8.0**).",
+                "effects": {"metrics.government_stability": -8.0, "metrics.public_support": -3.0}
+            }
+        ]
+    },
+    {
+        "id": "uk_dil_civil_service_leak",
+        "title": "Whitehall Leak: Permanent Secretary Open Resistance",
+        "description": "A hostile memo from a senior Whitehall Permanent Secretary is leaked to the BBC, accusing Number 10 of demanding unlawful policy shortcuts.",
+        "choices": [
+            {
+                "label": "Suspend the Permanent Secretary and Launch Inquiry",
+                "elaboration": "Order the Cabinet Office to suspend the official immediately and launch an internal security investigation.",
+                "pros": "Asserts political control over Whitehall (**Government Stability +6.0**).",
+                "cons": "Triggers corporate warfare across administrative desks (**Legitimacy -5.0**).",
+                "effects": {"metrics.government_stability": 6.0, "metrics.legitimacy": -5.0, "metrics.media_sentiment": -4.0}
+            },
+            {
+                "label": "Absorb the Blow and Issue Conciliatory Statement",
+                "elaboration": "Publicly downplay the memo as routine policy debate and invite senior civil servants to consultation.",
+                "pros": "Restores internal departmental harmony.",
+                "cons": "Makes Number 10 look weak before the press lobby (**Media Sentiment -8.0**).",
+                "effects": {"metrics.media_sentiment": -8.0, "metrics.government_stability": 2.0, "metrics.public_support": -2.0}
+            }
+        ]
+    },
+    {
+        "id": "uk_dil_local_council_bankruptcy",
+        "title": "Municipal Emergency: Major Council Section 114 Notice",
+        "description": "A major metropolitan council formally issues a Section 114 bankruptcy notice, threatening immediate collapse of local social care and schools.",
+        "choices": [
+            {
+                "label": "Bailout the Council with Emergency Treasury Grant",
+                "elaboration": "Instruct the Chancellor to provide an immediate unringfenced cash injection to clear the structural deficit.",
+                "pros": "Saves essential local services and avoids regional riots (**Public Support +5.0**).",
+                "cons": "Eats heavily into fiscal headroom (**Fiscal Headroom -£2.0bn**).",
+                "effects": {"metrics.fiscal_headroom": -2.0, "metrics.public_support": 5.0, "metrics.debt": 1.0}
+            },
+            {
+                "label": "Impose Commissioners and Force Asset Sales",
+                "elaboration": "Send in government-appointed commissioners to take over municipal operations and sell off public assets.",
+                "pros": "Signals strict financial discipline to bond markets (**Government Stability +4.0**).",
+                "cons": "Provokes fierce local protests and union backlash (**Unrest +15**).",
+                "effects": {"metrics.government_stability": 4.0, "metrics.public_support": -6.0, "metrics.media_sentiment": -5.0}
+            }
+        ]
+    },
+    {
+        "id": "uk_dil_bbc_impartiality_row",
+        "title": "Culture War: BBC Impartiality & Licence Fee Row",
+        "description": "Leading backbenchers accuse the BBC of institutional bias on current affairs broadcasts, demanding an immediate freeze to the licence fee.",
+        "choices": [
+            {
+                "label": "Freeze Licence Fee and Order Governance Overhaul",
+                "elaboration": "Announce a two-year statutory freeze on the licence fee and call for an independent review of editorial boards.",
+                "pros": "Thrills right-leaning backbenchers and populists (**Government Stability +7.0**).",
+                "cons": "Triggers international condemnation regarding press freedom (**Media Sentiment -8.0**).",
+                "effects": {"metrics.government_stability": 7.0, "metrics.media_sentiment": -8.0, "metrics.diplomacy": -4.0}
+            },
+            {
+                "label": "Defend BBC Independence and Protect Funding",
+                "elaboration": "Release a Downing Street statement firmly backing the BBC charter and rebuking attacks from backbenchers.",
+                "pros": "Preserves international standing and media goodwill (**Media Sentiment +6.0**).",
+                "cons": "Enrages your party's traditionalist wing (**Government Stability -6.0**).",
+                "effects": {"metrics.media_sentiment": 6.0, "metrics.government_stability": -6.0, "metrics.public_support": 2.0}
+            }
+        ]
+    },
+    {
+        "id": "uk_dil_by_election_defeat",
+        "title": "By-Election Shock: Safe Seat Collapse",
+        "description": "A stunning swing against your party results in a historic by-election defeat in a previously safe heartland seat.",
+        "choices": [
+            {
+                "label": "Announce Cabinet Reshuffle & Policy Pivot",
+                "elaboration": "Acknowledge voter frustration by sacking underperforming ministers and pivoting your manifesto.",
+                "pros": "Seizes control of news agenda and pacifies MPs (**Government Stability +5.0**).",
+                "cons": "Projects internal panic to the electorate (**Public Support -4.0**).",
+                "effects": {"metrics.government_stability": 5.0, "metrics.public_support": -4.0, "metrics.majority_seats": -1}
+            },
+            {
+                "label": "Stay the Course and Blame Mid-Term Blues",
+                "elaboration": "Dismiss the result at the Despatch Box as standard mid-term fatigue, insisting your long-term plan is unchanged.",
+                "pros": "Demonstrates unshakeable personal resolve.",
+                "cons": "Deepens backbench despair and rebellion (**Government Stability -8.0**).",
+                "effects": {"metrics.government_stability": -8.0, "metrics.media_sentiment": -6.0, "metrics.majority_seats": -1}
+            }
+        ]
     }
 ]
 
