@@ -1,140 +1,33 @@
 import random
 
-
 def simulate_economy(state):
-
     m = state["metrics"]
 
-    # ------------------------------------------------------
-    # RANDOM ECONOMIC SHOCK
-    # ------------------------------------------------------
-
-    economic_noise = random.uniform(
-        -0.35,
-        0.35
-    )
-
+    # Random economic noise
+    economic_noise = random.uniform(-0.25, 0.25)
     m["growth"] += economic_noise
 
-    # ------------------------------------------------------
-    # INFLATION
-    # ------------------------------------------------------
-
-    inflation_pressure = (
-
-        (m["growth"] * 0.05) +
-
-        (m["deficit"] * 0.03) +
-
-        random.uniform(-0.2, 0.2)
-    )
-
+    # Inflation dynamics (driven by debt and growth)
+    inflation_pressure = (m["growth"] * 0.04) + random.uniform(-0.15, 0.15)
     m["inflation"] += inflation_pressure
 
-    # ------------------------------------------------------
-    # UNEMPLOYMENT
-    # ------------------------------------------------------
+    # Unemployment reaction
+    m["unemployment"] -= (m["growth"] * 0.06)
+    m["unemployment"] += random.uniform(-0.1, 0.1)
 
-    m["unemployment"] -= (
-        m["growth"] * 0.08
-    )
+    # GDP compound updates
+    m["gdp"] += m["gdp"] * (m["growth"] / 100.0)
 
-    m["unemployment"] += random.uniform(
-        -0.15,
-        0.15
-    )
+    # NHS and Public Services backlog pressure
+    if m["inflation"] > 4.0:
+        m["nhs_backlog"] += 1.5
+        m["public_support"] -= 1.0
+    else:
+        m["nhs_backlog"] -= 0.5
 
-    # ------------------------------------------------------
-    # GDP
-    # ------------------------------------------------------
-
-    m["gdp"] += (
-        m["gdp"] *
-        m["growth"] /
-        100
-    )
-
-    # ------------------------------------------------------
-    # DEBT
-    # ------------------------------------------------------
-
-    m["debt"] += (
-        m["deficit"] * 0.12
-    )
-
-    # ------------------------------------------------------
-    # WAGES
-    # ------------------------------------------------------
-
-    real_wage_pressure = (
-
-        m["inflation"] -
-        m["growth"]
-    )
-
-    m["wages"] -= (
-        real_wage_pressure *
-        0.12
-    )
-
-    # ------------------------------------------------------
-    # INVESTOR CONFIDENCE
-    # ------------------------------------------------------
-
-    if m["debt"] > 80:
-
-        m["currency_strength"] -= 0.8
-
-        m["interest_rate"] += 0.2
-
-        m["fdi"] -= 1
-
-    elif m["debt"] < 50:
-
-        m["currency_strength"] += 0.2
-
-        m["fdi"] += 0.5
-
-    # ------------------------------------------------------
-    # HIGH INFLATION
-    # ------------------------------------------------------
-
-    if m["inflation"] > 6:
-
-        m["public_support"] -= 1.5
-
-        m["protest_risk"] += 2
-
-    # ------------------------------------------------------
-    # HIGH UNEMPLOYMENT
-    # ------------------------------------------------------
-
-    if m["unemployment"] > 8:
-
-        m["public_support"] -= 1.5
-
-        m["protest_risk"] += 2
-
-    # ------------------------------------------------------
-    # CLAMP
-    # ------------------------------------------------------
-
-    m["inflation"] = max(
-        0,
-        m["inflation"]
-    )
-
-    m["unemployment"] = max(
-        0,
-        m["unemployment"]
-    )
-
-    m["growth"] = max(
-        -15,
-        min(15, m["growth"])
-    )
-
-    m["debt"] = max(
-        0,
-        m["debt"]
-    )
+    # Clamp values to logical boundaries
+    m["inflation"] = max(0.0, min(20.0, m["inflation"]))
+    m["unemployment"] = max(1.0, min(25.0, m["unemployment"]))
+    m["growth"] = max(-10.0, min(10.0, m["growth"]))
+    m["debt"] = max(20.0, min(200.0, m["debt"]))
+    m["nhs_backlog"] = max(10.0, min(100.0, m["nhs_backlog"]))
