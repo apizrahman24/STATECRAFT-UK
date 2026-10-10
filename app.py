@@ -71,15 +71,21 @@ active_dilemma = state.get("active_dilemma")
 if active_dilemma:
     st.markdown(f"""
     <div class="sc-alert">
-        <div style="font-weight: 800; font-size: 1.05rem; color: #f87171;">🚨 {active_dilemma["title"]}</div>
-        <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 0.3rem;">{active_dilemma["description"]}</div>
+        <div style="font-weight: 800; font-size: 1.15rem; color: #f87171;">🚨 {active_dilemma["title"]}</div>
+        <div style="color: #cbd5e1; font-size: 0.95rem; margin-top: 0.4rem; line-height: 1.4;">{active_dilemma["description"]}</div>
     </div>
     """, unsafe_allow_html=True)
     
+    st.markdown("### ⚖️ Executive Options & Strategic Trade-offs")
     cols = st.columns(len(active_dilemma["choices"]))
     for idx, (col, choice) in enumerate(zip(cols, active_dilemma["choices"])):
         with col:
-            if st.button(f"👉 {choice['label']}", key=f"d_btn_{idx}", use_container_width=True):
+            # ---> PUT THE SNIPPET RIGHT HERE <---
+            st.markdown(f"**Option {idx+1}: {choice['label']}**")
+            st.caption(choice["elaboration"])
+            st.markdown(f"🟢 **Pros:** {choice['pros']}")
+            st.markdown(f"🔴 **Cons:** {choice['cons']}")
+            if st.button(f"👉 Select Option {idx+1}", key=f"d_btn_{idx}", use_container_width=True):
                 resolve_dilemma(state, idx)
                 st.rerun()
     st.divider()
