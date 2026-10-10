@@ -2,101 +2,75 @@ import copy
 from engine.events import trigger_era_event
 
 POLICIES = {
-    "Austerity Measures": {
-        "description": "Cut public spending to lower national debt, at the cost of public approval.",
-        "effects": {"debt": -5.0, "public_support": -6.0, "government_stability": -2.0}
+    "Austerity & Spending Cuts": {
+        "description": "Reduce public sector spending to lower national debt, at the cost of public services and NHS capacity.",
+        "effects": {"debt": -4.0, "public_support": -5.0, "nhs_backlog": 5.0, "government_stability": -2.0}
     },
-    "Infrastructure Stimulus": {
-        "description": "Fund large-scale public works to boost economic growth and employment.",
-        "effects": {"gdp": 4.0, "unemployment": -1.5, "debt": 4.0, "inflation": 1.0}
+    "NHS Emergency Funding": {
+        "description": "Inject targeted funding into hospitals to cut waiting lists.",
+        "effects": {"nhs_backlog": -6.0, "public_support": 5.0, "debt": 3.0}
     },
-    "Military Buildup": {
-        "description": "Increase defense spending to elevate military readiness and national power projection.",
-        "effects": {"military_readiness": 8.0, "debt": 3.0, "international_tension": 2.0}
+    "Green Energy Infrastructure": {
+        "description": "Subsidize renewable energy grid projects to boost long-term productivity.",
+        "effects": {"gdp": 3.0, "unemployment": -1.0, "debt": 3.0, "inflation": 0.5}
     },
-    "Price Controls": {
-        "description": "Legislate strict price ceilings on essential commodities to curb runaway inflation.",
-        "effects": {"inflation": -3.5, "public_support": 3.0, "gdp": -1.0}
+    "Bank of England Rate Pressure": {
+        "description": "Signal tighter monetary discipline to restrain persistent inflation.",
+        "effects": {"inflation": -2.0, "growth": -1.0, "public_support": -2.0}
     }
 }
 
-def create_game(
-    country_name, year, historical_mode, selected_gov, government_config,
-    economy, territory, ideology, technology, society, foreign_position,
-    scenario, crisis, leader
-):
+def create_uk_game(pm_name, ruling_party):
     return {
-        "country_name": country_name,
-        "leader": leader,
-        "government": selected_gov,
-        "government_config": government_config,
-        "economy": economy,
-        "territory": territory,
-        "ideology": ideology,
-        "technology": technology,
-        "society": society,
-        "foreign_position": foreign_position,
-        "scenario": scenario,
-        "crisis": crisis,
-        "historical_mode": historical_mode,
+        "country_name": "United Kingdom",
+        "leader": pm_name,
+        "ruling_party": ruling_party,
+        "era": "Modern Era (UK Post-Election)",
         "state": {
             "turn": 1,
-            "year": year,
-            "month": 1,
-            "day": 1,
+            "year": 2026,
+            "month": 7,
+            "majority_seats": 348,
             "metrics": {
                 "gdp": 100.0,
-                "growth": 2.5,
-                "inflation": 2.4,
-                "unemployment": 5.0,
-                "debt": 45.0,
-                "government_stability": 75.0,
-                "public_support": 55.0,
-                "legitimacy": 60.0,
-                "interest_rate": 4.0,
-                "currency_strength": 100.0,
-                "fdi": 10.0,
-                "reserves": 20.0,
-                "diplomacy": 50.0,
-                "trade_openness": 50.0,
-                "military_readiness": 50.0,
-                "international_tension": 20.0
+                "growth": 1.2,
+                "inflation": 3.8,
+                "unemployment": 4.2,
+                "debt": 98.0,
+                "government_stability": 70.0,
+                "public_support": 52.0,
+                "legitimacy": 65.0,
+                "nhs_backlog": 65.0,
+                "diplomacy": 60.0,
+                "military_readiness": 55.0,
+                "international_tension": 30.0
             },
-            "groups": {
-                "Elites": {"approval": 70, "wealth_share": 40, "radicalization": 10},
-                "Middle Class": {"approval": 60, "wealth_share": 35, "radicalization": 15},
-                "Working Class": {"approval": 50, "wealth_share": 25, "radicalization": 25}
-            },
-            "parties": {
-                "Ruling Party": {"seats": 55, "loyalty": 80},
-                "Opposition": {"seats": 45, "loyalty": 40}
-            },
-            "regions": {
-                "Capital Region": {"stability": 80, "unrest": 10, "wealth": 50},
-                "Periphery": {"stability": 60, "unrest": 30, "wealth": 20}
-            },
-            "rivals": [
-                {"name": "Neighboring Empire", "relation": "Neutral", "tension": 30}
-            ],
-            "situations": [crisis],
             "events": [
                 {
-                    "year": year,
-                    "title": "Founding of the Nation",
-                    "description": f"{country_name} has emerged onto the world stage under the rule of {leader}."
+                    "year": 2026,
+                    "title": "General Election Victory",
+                    "description": f"{pm_name} leads the {ruling_party} into 10 Downing Street following a major electoral breakthrough."
                 }
             ],
-            "history": [
-                {
-                    "year": year,
-                    "gdp": 100.0,
-                    "debt": 45.0,
-                    "inflation": 2.4,
-                    "unemployment": 5.0,
-                    "stability": 75.0
-                }
-            ],
-            "active_dilemma": None
+            "history": [],
+            "active_dilemma": {
+                "title": "The Treasury Autumn Fiscal Statement",
+                "description": "The Chancellor warns that public sector pay demands and NHS backlogs have created a multi-billion pound shortfall in the upcoming budget.",
+                "choices": [
+                    {
+                        "label": "Increase Wealth and Corporate Levies",
+                        "effects": {"metrics.debt": -3.0, "metrics.public_support": 3.0, "metrics.growth": -1.0}
+                    },
+                    {
+                        "label": "Enforce Strict Departmental Spending Freezes",
+                        "effects": {"metrics.debt": -4.0, "metrics.public_support": -6.0, "metrics.nhs_backlog": 4.0}
+                    },
+                    {
+                        "label": "Borrow to Finance Public Infrastructure Growth",
+                        "effects": {"metrics.debt": 5.0, "metrics.inflation": 1.2, "metrics.gdp": 2.0}
+                    }
+                ]
+            }
         }
     }
 
@@ -104,24 +78,9 @@ def advance_turn(game):
     state = game["state"]
     metrics = state["metrics"]
     
-    # Basic economic drift simulation
-    growth_drift = (metrics["government_stability"] - 50) * 0.02
-    metrics["growth"] = max(-15.0, min(15.0, 2.5 + growth_drift))
-    metrics["gdp"] *= (1.0 + metrics["growth"] / 100.0)
-    
+    metrics["growth"] = round(max(-5.0, min(8.0, metrics["growth"] + (metrics["government_stability"] - 50) * 0.01)), 2)
     state["turn"] += 1
     
-    # Save a historical snapshot
-    state["history"].append({
-        "year": state["year"],
-        "gdp": metrics["gdp"],
-        "debt": metrics["debt"],
-        "inflation": metrics["inflation"],
-        "unemployment": metrics["unemployment"],
-        "stability": metrics["government_stability"]
-    })
-    
-    # Trigger dynamic era-specific events & dilemmas
     trigger_era_event(state, game)
 
 def apply_policy(game, policy_name):
@@ -136,6 +95,6 @@ def apply_policy(game, policy_name):
             
     game["state"]["events"].append({
         "year": game["state"]["year"],
-        "title": f"Policy Implemented: {policy_name}",
+        "title": f"Cabinet Directive: {policy_name}",
         "description": policy["description"]
     })
