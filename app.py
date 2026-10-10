@@ -17,7 +17,8 @@ st.markdown("""
 .sc-hero { padding: 1.5rem 2rem; border: 1px solid rgba(214,179,106,0.2); border-radius: 12px; background: rgba(15,23,42,0.9); margin-bottom: 1.2rem; }
 .sc-card { background: rgba(15, 23, 42, 0.75); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem; margin-bottom: 0.6rem; }
 .sc-value { font-size: 1.4rem; font-weight: 800; color: #f1f5f9; }
-.sc-alert { border-left: 4px solid #ef4444; background: rgba(239,68,68,0.12); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+.sc-alert { border-left: 4px solid #ef4444; background: rgba(239,68,68,0.12); padding: 1.2rem; border-radius: 8px; margin-bottom: 1rem; }
+.sc-choice-box { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -35,7 +36,7 @@ if st.session_state.game is None:
         party = st.selectbox("Ruling Party", ["Labour Party", "Conservative Party", "Liberal Democrats", "Reform UK", "Green Party"])
     with col2:
         st.markdown("### 🏛️ Mandate Preview")
-        st.caption("Manage backbench MP factions, cabinet loyalty, media scrutiny, and devolved administrations.")
+        st.caption("Manage backbench MP factions, cabinet loyalty, media scrutiny, devolved administrations, and geostrategic crises.")
 
     if st.button("🏛️ ENTER 10 DOWNING STREET", type="primary", use_container_width=True):
         st.session_state.game = create_uk_game(pm_name, party)
@@ -66,7 +67,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Dilemma Prompt
+# Dilemma Prompt with Visual Cards & Aligned Layout
 active_dilemma = state.get("active_dilemma")
 if active_dilemma:
     st.markdown(f"""
@@ -78,16 +79,14 @@ if active_dilemma:
     
     st.markdown("### ⚖️ Executive Options & Strategic Trade-offs")
     cols = st.columns(len(active_dilemma["choices"]))
-    
     for idx, (col, choice) in enumerate(zip(cols, active_dilemma["choices"])):
         with col:
             elaboration = choice.get("elaboration", "Execute this directive to navigate current fiscal pressures.")
             pros = choice.get("pros", "Helps stabilize specific national metrics.")
             cons = choice.get("cons", "Carries hidden political or economic tradeoffs.")
             
-            # Uniform Card Container with Fixed Minimum Height
             st.markdown(f"""
-            <div class="sc-card" style="min-height: 230px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="sc-card" style="min-height: 240px; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="font-weight: 700; font-size: 1rem; color: #38bdf8; margin-bottom: 0.4rem;">Option {idx+1}: {choice['label']}</div>
                     <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.6rem;">{elaboration}</div>
@@ -97,11 +96,9 @@ if active_dilemma:
             </div>
             """, unsafe_allow_html=True)
             
-            # Selection Button pinned below the card
             if st.button(f"👉 Select Option {idx+1}", key=f"d_btn_{idx}", use_container_width=True):
                 resolve_dilemma(state, idx)
                 st.rerun()
-                
     st.divider()
 
 # Metrics Grid
@@ -126,13 +123,25 @@ for i, (label, val) in enumerate(snapshot):
         </div>
         """, unsafe_allow_html=True)
 
-# Tabs for Factions, Cabinet Reshuffles & Devolved Administrations
-tab1, tab2, tab3, tab4 = st.tabs(["🏛️ Executive Cabinet", "👥 Backbench Factions", "🗺️ Devolved Administrations", "📰 Dispatch Archive"])
+# Tabs with Visual UIs (Cabinet Bars, Faction Happiness Meters, Trend Charts)
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏛️ Executive Cabinet", "👥 Backbench Factions", "🗺️ Devolved Administrations", "📈 Economic Trends", "📰 Dispatch Archive"])
 
 with tab1:
-    st.subheader("Cabinet Ministers & Loyalty")
-    cab_df = pd.DataFrame(state["cabinet"]).T
-    st.dataframe(cab_df, use_container_width=True)
+    st.subheader("Cabinet Ministers, Loyalty & Ambition")
+    st.caption("Manage key government departments and ministerial loyalty to prevent public resignations.")
+    
+    for role, data in state["cabinet"].items():
+        col_a, col_b, col_c = st.columns([2, 2, 3])
+        with col_a:
+            st.markdown(f"**{role}**")
+            st.caption(f"Minister: {data['name']}")
+        with col_b:
+            loyalty_color = "🟢" if data['loyalty'] > 60 else "🔴"
+            st.markdown(f"{loyalty_color} **Loyalty:** {data['loyalty']}%")
+            st.progress(max(0, min(100, data['loyalty'])) / 100)
+        with col_c:
+            st.markdown(f"⚡ **Competence:** {data['competence']}% | 🔥 **Ambition:** {data['ambition']}%")
+        st.divider()
     
     st.markdown("### 🔄 Execute Cabinet Reshuffle")
     res_col1, res_col2 = st.columns(2)
@@ -147,16 +156,40 @@ with tab1:
 
 with tab2:
     st.subheader("Ruling Party Factional Breakdown & Happiness")
-    fact_df = pd.DataFrame(state["factions"]).T
-    st.dataframe(fact_df, use_container_width=True)
-    st.caption("Keep faction happiness above 45% to prevent coordinated backbench rebellions and leadership challenges.")
+    st.caption("Keep faction happiness above 45% to prevent coordinated backbench rebellions and leadership threats.")
+    
+    for faction_name, data in state["factions"].items():
+        h_val = data['happiness']
+        status_icon = "🟢 Secure" if h_val > 60 else ("🟡 Restless" if h_val > 45 else "🔴 Rebellious")
+        
+        st.markdown(f"**{faction_name}** ({data['size_MPs']} MPs) — *Key Demand: {data['key_demand']}*")
+        f_col1, f_col2 = st.columns([4, 1])
+        with f_col1:
+            st.progress(max(0, min(100, h_val)) / 100)
+        with f_col2:
+            st.markdown(f"**{h_val:.0f}%** ({status_icon})")
+        st.write("")
 
 with tab3:
     st.subheader("Devolved Nations & Relations")
-    dev_df = pd.DataFrame(state["devolved_nations"]).T
-    st.dataframe(dev_df, use_container_width=True)
+    for nation, data in state["devolved_nations"].items():
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(f"**{nation}**")
+            st.metric("Relations Score", f"{data['relations']}/100")
+        with col2:
+            st.metric("Unrest Index", f"{data['unrest']}%", delta_color="inverse")
+        st.divider()
 
 with tab4:
+    st.subheader("National Economic & Stability Trends")
+    if len(state["history"]) > 0:
+        history_df = pd.DataFrame(state["history"])
+        st.line_chart(history_df.set_index("year")[["gdp", "debt", "inflation", "stability"]])
+    else:
+        st.info("Advance past turn 1 to begin recording historical trend charts.")
+
+with tab5:
     st.subheader("Historical Dispatch Log")
     for ev in reversed(state["events"][-6:]):
         st.markdown(f"**[{ev['year']}] {ev['title']}**")
