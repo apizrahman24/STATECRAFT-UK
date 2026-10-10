@@ -55,15 +55,17 @@ with st.sidebar:
     st.write(f"**Working Majority:** {state['majority_seats']} seats")
     st.caption(f"📅 Month {state['month']}, Year {state['year']}")
     st.divider()
-    
+
     # --- AUTOPLAY / STRESS TEST CONTROLS ---
     st.markdown("### ⚡ Stress-Test Engine")
     autoplay = st.toggle("Autoplay Simulation", value=False)
     speed_steps = st.slider("Months per tick", 1, 12, 1)
     
     if autoplay:
+    # Advance multiple months automatically
+    for _ in range(speed_steps):
+        # If a cabinet crisis is active, automatically resolve it using Option 1 so it never blocks
         if state.get("active_dilemma") is not None:
-            # Auto-resolve dilemmas during stress test by picking Option 1
             from engine.events import resolve_dilemma
             resolve_dilemma(state, 0)
         
