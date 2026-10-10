@@ -78,22 +78,30 @@ if active_dilemma:
     
     st.markdown("### ⚖️ Executive Options & Strategic Trade-offs")
     cols = st.columns(len(active_dilemma["choices"]))
+    
     for idx, (col, choice) in enumerate(zip(cols, active_dilemma["choices"])):
         with col:
-            st.markdown(f"**Option {idx+1}: {choice['label']}**")
-            
-            # Safely fallback if elaboration/pros/cons are missing from old/annual budget events
-            elaboration = choice.get("elaboration", "Execute this executive directive to navigate current fiscal pressures.")
+            elaboration = choice.get("elaboration", "Execute this directive to navigate current fiscal pressures.")
             pros = choice.get("pros", "Helps stabilize specific national metrics.")
             cons = choice.get("cons", "Carries hidden political or economic tradeoffs.")
             
-            st.caption(elaboration)
-            st.markdown(f"🟢 **Pros:** {pros}")
-            st.markdown(f"🔴 **Cons:** {cons}")
+            # Uniform Card Container with Fixed Minimum Height
+            st.markdown(f"""
+            <div class="sc-card" style="min-height: 230px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 700; font-size: 1rem; color: #38bdf8; margin-bottom: 0.4rem;">Option {idx+1}: {choice['label']}</div>
+                    <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.6rem;">{elaboration}</div>
+                    <div style="font-size: 0.82rem; margin-bottom: 0.3rem;">🟢 <b>Pros:</b> {pros}</div>
+                    <div style="font-size: 0.82rem; margin-bottom: 0.6rem;">🔴 <b>Cons:</b> {cons}</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             
+            # Selection Button pinned below the card
             if st.button(f"👉 Select Option {idx+1}", key=f"d_btn_{idx}", use_container_width=True):
                 resolve_dilemma(state, idx)
                 st.rerun()
+                
     st.divider()
 
 # Metrics Grid
