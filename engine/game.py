@@ -6,22 +6,37 @@ from engine.politics import initialize_factions, simulate_faction_drift, check_l
 POLICIES = {
     "Comprehensive Spending Review Cuts": {
         "description": "Enforce strict departmental spending freezes across Whitehall to preserve fiscal headroom.",
+        "elaboration": "Instruct the Treasury to implement across-the-board 3% departmental budget freezes for non-ringfenced Whitehall ministries.",
+        "pros": "Shrinks national debt (**Debt -5.0%**) and stabilizes long-term fiscal credibility.",
+        "cons": "Severely damages public service delivery (**NHS Backlog +4.0**), triggers hostile press headlines (**Media -8.0**), and erodes voter approval (**Public Support -6.0**).",
         "effects": {"debt": -5.0, "public_support": -6.0, "nhs_backlog": 4.0, "media_sentiment": -8.0}
     },
     "Emergency NHS Capital Injection": {
         "description": "Direct emergency funding into hospital waiting lists and social care, financed via short-term borrowing.",
+        "elaboration": "Authorize a £4bn emergency Treasury grant directly to NHS England acute hospital trusts to fund weekend overtime and surgical backlog clearance.",
+        "pros": "Rapidly decreases hospital waiting lists (**NHS Backlog -10.0**) and builds immediate public goodwill (**Public Support +7.0**).",
+        "cons": "Increases short-term government borrowing (**Debt +4.0%**).",
         "effects": {"nhs_backlog": -10.0, "public_support": 7.0, "debt": 4.0, "media_sentiment": 5.0}
     },
     "Green Industrial Transition Subsidy": {
         "description": "Subsidize renewable grid infrastructure and tech startups to boost long-term productivity and FDI.",
+        "elaboration": "Deploy capital grants and tax allowances to private clean-tech developers building offshore wind and battery storage networks.",
+        "pros": "Drives long-term growth (**GDP +3.2%**), attracts global capital (**FDI +5.0**), and creates green industrial jobs (**Unemployment -1.0%**).",
+        "cons": "Requires additional state borrowing (**Debt +3.5%**).",
         "effects": {"gdp": 3.2, "fdi": 5.0, "unemployment": -1.0, "debt": 3.5}
     },
     "Bank of England Rate Defense": {
         "description": "Coordinate with Threadneedle Street to signal tighter monetary policy and suppress persistent inflation.",
-        "effects": {"inflation": -2.2, "growth": -1.0, "public_support": -2.0}
+        "effects": {"inflation": -2.2, "growth": -1.0, "public_support": -2.0},
+        "elaboration": "Issue formal Treasury guidance endorsing tight interest rate targets to tame core service inflation.",
+        "pros": "Cools down cost-of-living pressures (**Inflation -2.2%**).",
+        "cons": "Dampens short-term economic momentum (**GDP Growth -1.0%**) and slightly lowers public approval (**Public Support -2.0**)."
     },
     "Launch Media Defense Campaign": {
         "description": "Deploy government spin doctors to saturate broadcast and print media, boosting public perception.",
+        "elaboration": "Mobilize Downing Street communications staff to coordinate major media appearances and defend key government policies.",
+        "pros": "Dramatically improves national media coverage (**Media Sentiment +15.0**) and lifts government support (**Public Support +4.0**).",
+        "cons": "Uses up administrative resources and fiscal headroom (**Fiscal Headroom -£1.5bn**).",
         "effects": {"media_sentiment": 15.0, "fiscal_headroom": -1.5, "public_support": 4.0}
     }
 }
