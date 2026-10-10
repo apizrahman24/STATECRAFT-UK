@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 import streamlit as st
 from engine.game import create_uk_game, advance_turn, apply_policy, POLICIES
@@ -46,7 +47,7 @@ game = st.session_state.game
 state = game["state"]
 metrics = state["metrics"]
 
-# Sidebar with Autoplay Stress-Test Mode
+# Sidebar with Continuous Autoplay Stress-Test Loop
 with st.sidebar:
     st.markdown("### 🏛️ 10 Downing Street")
     st.write(f"**PM:** {game['leader']}")
@@ -61,16 +62,17 @@ with st.sidebar:
     speed_steps = st.slider("Months per tick", 1, 12, 1)
     
     if autoplay:
+        if state.get("active_dilemma") is not None:
+            resolve_dilemma(state, 0)
+        
         for _ in range(speed_steps):
-            if state.get("active_dilemma") is not None:
-                resolve_dilemma(state, 0)
-            
             state["month"] += 1
             if state["month"] > 12:
                 state["month"] = 1
                 state["year"] += 1
             advance_turn(game)
             
+        time.sleep(0.4)
         st.rerun()
     # ---------------------------------------
 
