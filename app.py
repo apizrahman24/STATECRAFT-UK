@@ -210,11 +210,10 @@ with tab5:
         st.caption(ev["description"])
         st.divider()
 
-# Direct Cabinet Action (5 Columns in 1 Row)
+# Direct Cabinet Action (5 Columns in 1 Row with Active Green Highlight)
 st.subheader("🎯 Direct Cabinet Action")
 st.caption("Select and execute executive directives to manage national metrics.")
 
-# Ensure active_policies exists in state
 if "active_policies" not in state:
     state["active_policies"] = set()
 
@@ -225,7 +224,6 @@ for idx, (p_name, p_data) in enumerate(pol_items):
     with p_cols[idx]:
         is_active = p_name in state["active_policies"]
         
-        # Dynamic styling: Green border and glowing background if active
         border_style = "2px solid #22c55e" if is_active else "1px solid #1e293b"
         bg_style = "rgba(34, 197, 94, 0.12)" if is_active else "rgba(15, 23, 42, 0.75)"
         status_badge = "<div style='color: #22c55e; font-weight: 800; font-size: 0.75rem; margin-bottom: 0.2rem;'>✅ ACTIVE DIRECTIVE</div>" if is_active else ""
@@ -246,12 +244,12 @@ for idx, (p_name, p_data) in enumerate(pol_items):
         </div>
         """, unsafe_allow_html=True)
         
-        # Toggle/Activate directive button
         btn_label = "✅ ACTIVE" if is_active else "⚡ ENACT"
         if st.button(btn_label, key=f"pol_btn_{idx}", use_container_width=True, type="secondary" if is_active else "primary"):
             state["active_policies"].add(p_name)
             apply_policy(game, p_name)
             st.rerun()
+
 st.divider()
 
 if state.get("active_dilemma") is not None:
