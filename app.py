@@ -47,13 +47,38 @@ game = st.session_state.game
 state = game["state"]
 metrics = state["metrics"]
 
-# Sidebar
+# Inside your sidebar block in app.py:
 with st.sidebar:
     st.markdown("### 🏛️ 10 Downing Street")
     st.write(f"**PM:** {game['leader']}")
     st.write(f"**Party:** {game['ruling_party']}")
     st.write(f"**Working Majority:** {state['majority_seats']} seats")
     st.caption(f"📅 Month {state['month']}, Year {state['year']}")
+    st.divider()
+    
+    # --- AUTOPLAY / STRESS TEST CONTROLS ---
+    st.markdown("### ⚡ Stress-Test Engine")
+    autoplay = st.toggle("Autoplay Simulation", value=False)
+    speed_steps = st.slider("Months per tick", 1, 12, 1)
+    
+    if autoplay:
+        if state.get("active_dilemma") is not None:
+            # Auto-resolve dilemmas during stress test by picking Option 1
+            from engine.events import resolve_dilemma
+            resolve_dilemma(state, 0)
+        
+        # Advance multiple months automatically
+        for _ in range(speed_steps):
+            state["month"] += 1
+            if state["month"] > 12:
+                state["month"] = 1
+                state["year"] += 1
+            advance_turn(game)
+            
+        # Rerun to refresh dashboard metrics live
+        st.rer()
+    # ---------------------------------------
+
     st.divider()
     if st.button("🔄 Reset Campaign", use_container_width=True):
         st.session_state.game = None
