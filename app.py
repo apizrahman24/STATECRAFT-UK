@@ -14,10 +14,11 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap');
 .stApp { background: linear-gradient(180deg, #070a0f 0%, #0c121d 100%); font-family: 'Inter', sans-serif; color: #f1f5f9; }
 [data-testid="stSidebar"] { background: #05070a; border-right: 1px solid #1e293b; }
-.sc-hero { padding: 1.5rem 2rem; border: 1px solid rgba(214,179,106,0.2); border-radius: 12px; background: rgba(15,23,42,0.9); margin-bottom: 1.2rem; }
+.sc-hero { padding: 1.5rem 2rem; border: 1px solid rgba(214,179,106,0.2); border-radius: 12px; background: rgba(15,23,42,0.9); margin-bottom: 1rem; }
 .sc-card { background: rgba(15, 23, 42, 0.75); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem; margin-bottom: 0.6rem; }
 .sc-value { font-size: 1.4rem; font-weight: 800; color: #f1f5f9; }
 .sc-alert { border-left: 4px solid #ef4444; background: rgba(239,68,68,0.12); padding: 1.2rem; border-radius: 8px; margin-bottom: 1rem; }
+.sc-ticker { background: rgba(15, 23, 42, 0.95); border: 1px solid #38bdf8; border-radius: 8px; padding: 0.6rem 1rem; margin-bottom: 1.2rem; display: flex; align-items: center; font-size: 0.85rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -64,6 +65,15 @@ st.markdown(f"""
 <div class="sc-hero">
     <div style="color: #e2b764; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Turn {state['turn']} • Strategic Command</div>
     <div style="font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900;">United Kingdom Government ({game['ruling_party']})</div>
+</div>
+""", unsafe_allow_html=True)
+
+# Live Downing Street Breaking News Ticker
+latest_event = state["events"][-1] if state["events"] else {"title": "Number 10 Briefing", "description": "Government settles into executive command."}
+st.markdown(f"""
+<div class="sc-ticker">
+    <div style="color: #38bdf8; font-weight: 800; margin-right: 0.8rem; text-transform: uppercase; font-size: 0.75rem; border-right: 1px solid #334155; padding-right: 0.8rem;">🚨 Breaking News</div>
+    <div style="color: #cbd5e1;"><b>{latest_event['title']}:</b> {latest_event['description']}</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -121,7 +131,7 @@ for i, (label, val) in enumerate(snapshot):
 st.divider()
 
 # Direct Cabinet Action (Collapsible & Moved Above Tabs)
-with st.expander("🎯 Direct Cabinet Action (Executive Directives)", expanded=False):
+with st.expander("🎯 Direct Cabinet Action (Executive Directives)", expanded=True):
     st.caption("Select and execute executive directives to manage national metrics.")
 
     if "active_policies" not in state:
