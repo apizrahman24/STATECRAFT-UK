@@ -1,6 +1,7 @@
 import copy
 import random
 from engine.events import trigger_era_event
+from engine.politics import initialize_factions, simulate_faction_drift, check_leadership_challenge
 
 POLICIES = {
     "Comprehensive Spending Review Cuts": {
@@ -66,7 +67,7 @@ def create_uk_game(pm_name, ruling_party):
                 "fiscal_headroom": 11.0,
                 "government_stability": stability,
                 "public_support": approval,
-                "media_sentiment": 50.0, # 0 (Hostile) to 100 (Favorable)
+                "media_sentiment": 50.0,
                 "legitimacy": 68.0,
                 "nhs_backlog": 62.0,
                 "fdi": 25.0,
@@ -80,6 +81,7 @@ def create_uk_game(pm_name, ruling_party):
                 "Health Secretary": {"name": "Wes Streeting", "loyalty": 65, "competence": 78, "ambition": 85},
                 "Home Secretary": {"name": "Yvette Cooper", "loyalty": 78, "competence": 74, "ambition": 50}
             },
+            "factions": initialize_factions(ruling_party),
             "devolved_nations": {
                 "Scotland (Holyrood)": {"relations": 55, "unrest": 25},
                 "Wales (Senedd)": {"relations": 65, "unrest": 15},
@@ -119,23 +121,41 @@ def advance_turn(game):
     state = game["state"]
     metrics = state["metrics"]
     
-    # Economic and media drift
+    # Simulate factional drift
+    simulate_faction_drift(state)
+    
+    # Check for internal leadership challenge triggered by backbench factions
+    if check_leadership_challenge(state):
+        state["active_dilemma"] = {
+            "id": "leadership_challenge",
+            "title": "🚨 INTERNAL PARTY LEADERSHIP CHALLENGE",
+            "description": "Deep dissatisfaction among your backbench factions has reached boiling point! Ambitious rivals are circulating letters of no confidence in your leadership.",
+            "choices": [
+                {
+                    "label": "Offer Major Policy Concessions & Cabinet Post Upgrades",
+                    "effects": {"metrics.government_stability": 10.0, "metrics.fiscal_headroom": -3.0, "metrics.public_support": 3.0}
+                },
+                {
+                    "label": "Fight the Challenge Head-On & Expel Rebels from the Whip",
+                    "effects": {"metrics.government_stability": -15.0, "metrics.media_sentiment": -10.0, "metrics.majority_seats": -12}
+                }
+            ]
+        }
+        return
+
     growth_drift = (metrics["government_stability"] - 50) * 0.015 - (metrics["inflation"] * 0.05)
     metrics["growth"] = round(max(-4.0, min(6.0, 1.3 + growth_drift)), 2)
     metrics["gdp"] *= (1.0 + metrics["growth"] / 100.0)
     metrics["fiscal_headroom"] = round(metrics["fiscal_headroom"] + (metrics["growth"] * 1.5) - (metrics["debt"] * 0.02), 1)
-    
-    # Media sentiment naturally drifts toward public support
     metrics["media_sentiment"] = round(metrics["media_sentiment"] * 0.9 + metrics["public_support"] * 0.1, 1)
 
     state["turn"] += 1
     
-    # Annual Budget Check every 12 turns (Decembers)
     if state["turn"] % 12 == 0:
         state["active_dilemma"] = {
             "id": "annual_budget_review",
             "title": f"The Annual Chancellor's Budget & Comprehensive Review ({state['year']})",
-            "description": "It is time for the Chancellor's major fiscal statement. You must set tax thresholds and departmental allocations under OBR scrutiny.",
+            "description": "It is time for the Chancellor's major fiscal statement under OBR scrutiny.",
             "choices": [
                 {
                     "label": "Expansionary Tax Cuts & Public Investment",
@@ -148,14 +168,13 @@ def advance_turn(game):
             ]
         }
 
-    # By-election check (random constituency swing)
     if random.random() < 0.3:
         seat_change = random.choice([-2, -1, 1, 2])
         state["majority_seats"] += seat_change
         state["events"].append({
             "year": state["year"],
             "title": "Parliamentary By-Election Result",
-            "description": f"A fiercely contested regional by-election concludes. Net change in working majority seats: {seat_change:+d}."
+            "description": f"Net change in working majority seats: {seat_change:+d}."
         })
 
     state["history"].append({
