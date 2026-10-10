@@ -25,6 +25,58 @@ POLICIES = {
 }
 
 def create_uk_game(pm_name, ruling_party):
+    # Set party-specific baseline metrics & majorities based on 2024–2026 data
+    if ruling_party == "Labour Party":
+        seats = 348
+        stability = 75.0
+        approval = 54.0
+        cabinet = {
+            "Chancellor of the Exchequer": {"name": "Rachel Reeves", "loyalty": 75, "competence": 80},
+            "Foreign Secretary": {"name": "David Lammy", "loyalty": 70, "competence": 72},
+            "Health Secretary": {"name": "Wes Streeting", "loyalty": 65, "competence": 78},
+            "Home Secretary": {"name": "Yvette Cooper", "loyalty": 78, "competence": 74}
+        }
+    elif ruling_party == "Conservative Party":
+        seats = 121
+        stability = 58.0
+        approval = 42.0
+        cabinet = {
+            "Shadow Chancellor / Treasury": {"name": "Mel Stride", "loyalty": 70, "competence": 72},
+            "Foreign Affairs": {"name": "Priti Patel", "loyalty": 65, "competence": 68},
+            "Health": {"name": "Victoria Atkins", "loyalty": 68, "competence": 70},
+            "Home Department": {"name": "James Cleverly", "loyalty": 72, "competence": 75}
+        }
+    elif ruling_party == "Liberal Democrats":
+        seats = 72
+        stability = 62.0
+        approval = 46.0
+        cabinet = {
+            "Treasury Spokesperson": {"name": "Daisy Cooper", "loyalty": 80, "competence": 74},
+            "Foreign Affairs": {"name": "Layla Moran", "loyalty": 75, "competence": 70},
+            "Health Spokesperson": {"name": "Helen Morgan", "loyalty": 78, "competence": 72},
+            "Home Spokesperson": {"name": "Alistair Carmichael", "loyalty": 70, "competence": 75}
+        }
+    elif ruling_party == "Reform UK":
+        seats = 5
+        stability = 50.0
+        approval = 48.0
+        cabinet = {
+            "Chief Treasury Strategist": {"name": "Richard Tice", "loyalty": 85, "competence": 65},
+            "Foreign Affairs Lead": {"name": "Nigel Farage", "loyalty": 90, "competence": 70},
+            "Public Services Lead": {"name": "Rupert Lowe", "loyalty": 80, "competence": 60},
+            "Security Lead": {"name": "Lee Anderson", "loyalty": 85, "competence": 55}
+        }
+    else: # Green Party
+        seats = 4
+        stability = 55.0
+        approval = 45.0
+        cabinet = {
+            "Treasury & Climate Finance": {"name": "Carla Denyer", "loyalty": 85, "competence": 72},
+            "Foreign & Global Justice": {"name": "Adrian Ramsay", "loyalty": 82, "competence": 70},
+            "Public Services & NHS": {"name": "Zack Polanski", "loyalty": 80, "competence": 68},
+            "Home & Communities": {"name": "Ellie Chowns", "loyalty": 82, "competence": 70}
+        }
+
     return {
         "country_name": "United Kingdom",
         "leader": pm_name,
@@ -34,16 +86,16 @@ def create_uk_game(pm_name, ruling_party):
             "turn": 1,
             "year": 2026,
             "month": 7,
-            "majority_seats": 348,
+            "majority_seats": seats,
             "metrics": {
                 "gdp": 102.5,
                 "growth": 1.3,
                 "inflation": 3.2,
                 "unemployment": 4.1,
                 "debt": 98.5,
-                "fiscal_headroom": 11.0, # in billions
-                "government_stability": 72.0,
-                "public_support": 54.0,
+                "fiscal_headroom": 11.0,
+                "government_stability": stability,
+                "public_support": approval,
                 "legitimacy": 68.0,
                 "nhs_backlog": 62.0,
                 "fdi": 25.0,
@@ -51,12 +103,7 @@ def create_uk_game(pm_name, ruling_party):
                 "military_readiness": 58.0,
                 "international_tension": 35.0
             },
-            "cabinet": {
-                "Chancellor of the Exchequer": {"name": "Rachel Reeves", "loyalty": 75, "competence": 80},
-                "Foreign Secretary": {"name": "David Lammy", "loyalty": 70, "competence": 72},
-                "Health Secretary": {"name": "Wes Streeting", "loyalty": 65, "competence": 78},
-                "Home Secretary": {"name": "Yvette Cooper", "loyalty": 78, "competence": 74}
-            },
+            "cabinet": cabinet,
             "devolved_nations": {
                 "Scotland (Holyrood)": {"relations": 55, "unrest": 25},
                 "Wales (Senedd)": {"relations": 65, "unrest": 15},
@@ -65,27 +112,27 @@ def create_uk_game(pm_name, ruling_party):
             "events": [
                 {
                     "year": 2026,
-                    "title": "Entering Number 10",
-                    "description": f"{pm_name} assumes office at 10 Downing Street, inheriting tight fiscal headroom and persistent public service backlogs."
+                    "title": "Government Formed",
+                    "description": f"{pm_name} leads the {ruling_party} administration into Number 10 Downing Street."
                 }
             ],
             "history": [],
             "active_dilemma": {
                 "id": "uk_dil_autumn_budget",
                 "title": "The Autumn Budget & Fiscal Headroom Crisis",
-                "description": "The Office for Budget Responsibility (OBR) warns that unexpected energy price shocks and public pay settlements have squeezed your fiscal headroom down to just £7bn, threatening a gilt market sell-off.",
+                "description": "The Office for Budget Responsibility (OBR) warns that public pay settlements and energy price volatility have squeezed fiscal headroom down to £7bn.",
                 "choices": [
                     {
-                        "label": "Break Manifesto Pledge: Introduce targeted wealth and capital gains adjustments",
-                        "effects": {"metrics.fiscal_headroom": 8.0, "metrics.debt": -3.0, "metrics.public_support": -8.0, "cabinet.Chancellor of the Exchequer.loyalty": -10}
+                        "label": "Introduce Targeted Wealth and Capital Gains Adjustments",
+                        "effects": {"metrics.fiscal_headroom": 8.0, "metrics.debt": -3.0, "metrics.public_support": -8.0}
                     },
                     {
-                        "label": "Implement Severe Whitehall Departmental Cuts",
+                        "label": "Implement Severe Whitehall Departmental Spending Freezes",
                         "effects": {"metrics.fiscal_headroom": 6.0, "metrics.debt": -4.0, "metrics.nhs_backlog": 6.0, "metrics.public_support": -10.0}
                     },
                     {
                         "label": "Accept Deficit Expansion & Gilt Yield Risk",
-                        "effects": {"metrics.debt": 5.0, "metrics.inflation": 1.2, "metrics.public_support": 4.0, "cabinet.Chancellor of the Exchequer.loyalty": -15}
+                        "effects": {"metrics.debt": 5.0, "metrics.inflation": 1.2, "metrics.public_support": 4.0}
                     }
                 ]
             }
@@ -96,17 +143,12 @@ def advance_turn(game):
     state = game["state"]
     metrics = state["metrics"]
     
-    # Complex economic feedback calculation
     growth_drift = (metrics["government_stability"] - 50) * 0.015 - (metrics["inflation"] * 0.05)
     metrics["growth"] = round(max(-4.0, min(6.0, 1.3 + growth_drift)), 2)
     metrics["gdp"] *= (1.0 + metrics["growth"] / 100.0)
-    
-    # Fiscal headroom drifts based on growth and debt servicing
     metrics["fiscal_headroom"] = round(metrics["fiscal_headroom"] + (metrics["growth"] * 1.5) - (metrics["debt"] * 0.02), 1)
     
     state["turn"] += 1
-    
-    # Snapshot history
     state["history"].append({
         "year": state["year"],
         "gdp": metrics["gdp"],
