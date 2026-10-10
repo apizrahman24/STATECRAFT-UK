@@ -76,7 +76,7 @@ with st.sidebar:
             advance_turn(game)
             
         # Rerun to refresh dashboard metrics live
-        st.rer()
+        st.rerun()
     # ---------------------------------------
 
     st.divider()
