@@ -118,6 +118,53 @@ for i, (label, val) in enumerate(snapshot):
         </div>
         """, unsafe_allow_html=True)
 
+st.divider()
+
+# Direct Cabinet Action (Collapsible & Moved Above Tabs)
+with st.expander("🎯 Direct Cabinet Action (Executive Directives)", expanded=True):
+    st.caption("Select and execute executive directives to manage national metrics.")
+
+    if "active_policies" not in state:
+        state["active_policies"] = set()
+
+    pol_items = list(POLICIES.items())
+    p_cols = st.columns(len(pol_items))
+
+    for idx, (p_name, p_data) in enumerate(pol_items):
+        with p_cols[idx]:
+            is_active = p_name in state["active_policies"]
+            
+            border_color = "#22c55e" if is_active else "#1e293b"
+            bg_color = "rgba(34, 197, 94, 0.12)" if is_active else "rgba(15, 23, 42, 0.75)"
+            status_badge = "<div style='color: #22c55e; font-weight: 800; font-size: 0.72rem; margin-bottom: 0.3rem;'>✅ ACTIVE DIRECTIVE</div>" if is_active else "<div style='height: 1rem;'></div>"
+            
+            elaboration = p_data.get("elaboration", p_data.get("description", ""))
+            pros = p_data.get("pros", "Improves policy metrics.").replace("**", "")
+            cons = p_data.get("cons", "Carries metric tradeoffs.").replace("**", "")
+            
+            st.markdown(f"""
+            <div style="background: {bg_color}; border: 1px solid {border_color}; border-radius: 10px; padding: 0.85rem; min-height: 380px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem;">
+                <div>
+                    {status_badge}
+                    <div style="font-weight: 800; font-size: 0.95rem; color: #38bdf8; margin-bottom: 0.4rem; line-height: 1.2;">{p_name}</div>
+                    <div style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 0.6rem; line-height: 1.3;">{elaboration}</div>
+                    <div style="font-size: 0.74rem; color: #f1f5f9; margin-bottom: 0.4rem; line-height: 1.3;">🟢 <b>Pros:</b> {pros}</div>
+                    <div style="font-size: 0.74rem; color: #f1f5f9; margin-bottom: 0.6rem; line-height: 1.3;">🔴 <b>Cons:</b> {cons}</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            btn_label = "✅ ACTIVE" if is_active else "⚡ ENACT"
+            if st.button(btn_label, key=f"pol_btn_{idx}", use_container_width=True, type="secondary" if is_active else "primary"):
+                if is_active:
+                    state["active_policies"].remove(p_name)
+                else:
+                    state["active_policies"].add(p_name)
+                    apply_policy(game, p_name)
+                st.rerun()
+
+st.divider()
+
 # Tabs with Visual UIs
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏛️ Executive Cabinet", "👥 Backbench Factions", "🗺️ Devolved Administrations", "📈 Economic Trends", "📰 Dispatch Archive"])
 
@@ -221,49 +268,6 @@ with tab5:
         st.markdown(f"**[{ev['year']}] {ev['title']}**")
         st.caption(ev["description"])
         st.divider()
-
-# Direct Cabinet Action (5 Columns in 1 Row with Aligned Heights & Active Green State)
-st.subheader("🎯 Direct Cabinet Action")
-st.caption("Select and execute executive directives to manage national metrics.")
-
-if "active_policies" not in state:
-    state["active_policies"] = set()
-
-pol_items = list(POLICIES.items())
-p_cols = st.columns(len(pol_items))
-
-for idx, (p_name, p_data) in enumerate(pol_items):
-    with p_cols[idx]:
-        is_active = p_name in state["active_policies"]
-        
-        border_color = "#22c55e" if is_active else "#1e293b"
-        bg_color = "rgba(34, 197, 94, 0.12)" if is_active else "rgba(15, 23, 42, 0.75)"
-        status_badge = "<div style='color: #22c55e; font-weight: 800; font-size: 0.72rem; margin-bottom: 0.3rem;'>✅ ACTIVE DIRECTIVE</div>" if is_active else "<div style='height: 1rem;'></div>"
-        
-        elaboration = p_data.get("elaboration", p_data.get("description", ""))
-        pros = p_data.get("pros", "Improves policy metrics.").replace("**", "")
-        cons = p_data.get("cons", "Carries metric tradeoffs.").replace("**", "")
-        
-        st.markdown(f"""
-        <div style="background: {bg_color}; border: 1px solid {border_color}; border-radius: 10px; padding: 0.85rem; min-height: 380px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem;">
-            <div>
-                {status_badge}
-                <div style="font-weight: 800; font-size: 0.95rem; color: #38bdf8; margin-bottom: 0.4rem; line-height: 1.2;">{p_name}</div>
-                <div style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 0.6rem; line-height: 1.3;">{elaboration}</div>
-                <div style="font-size: 0.74rem; color: #f1f5f9; margin-bottom: 0.4rem; line-height: 1.3;">🟢 <b>Pros:</b> {pros}</div>
-                <div style="font-size: 0.74rem; color: #f1f5f9; margin-bottom: 0.6rem; line-height: 1.3;">🔴 <b>Cons:</b> {cons}</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        btn_label = "✅ ACTIVE" if is_active else "⚡ ENACT"
-        if st.button(btn_label, key=f"pol_btn_{idx}", use_container_width=True, type="secondary" if is_active else "primary"):
-            if is_active:
-                state["active_policies"].remove(p_name)
-            else:
-                state["active_policies"].add(p_name)
-                apply_policy(game, p_name)
-            st.rerun()
 
 st.divider()
 
