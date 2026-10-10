@@ -85,17 +85,12 @@ if active_dilemma:
             pros = choice.get("pros", "Helps stabilize specific national metrics.")
             cons = choice.get("cons", "Carries hidden political or economic tradeoffs.")
             
-            st.markdown(f"""
-            <div class="sc-card" style="min-height: 240px; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <div style="font-weight: 700; font-size: 1rem; color: #38bdf8; margin-bottom: 0.4rem;">Option {idx+1}: {choice['label']}</div>
-                    <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.6rem;">{elaboration}</div>
-                    <div style="font-size: 0.82rem; margin-bottom: 0.3rem;">🟢 <b>Pros:</b> {pros}</div>
-                    <div style="font-size: 0.82rem; margin-bottom: 0.6rem;">🔴 <b>Cons:</b> {cons}</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
+            with st.container(border=True):
+                st.markdown(f"**Option {idx+1}: {choice['label']}**")
+                st.caption(elaboration)
+                st.markdown(f"🟢 **Pros:** {pros}")
+                st.markdown(f"🔴 **Cons:** {cons}")
+                
             if st.button(f"👉 Select Option {idx+1}", key=f"d_btn_{idx}", use_container_width=True):
                 resolve_dilemma(state, idx)
                 st.rerun()
@@ -137,22 +132,12 @@ with tab1:
         with cab_cols[idx]:
             loyalty_color = "🟢" if data['loyalty'] > 60 else "🔴"
             
-            st.markdown(f"""
-            <div class="sc-card" style="min-height: 220px; padding: 1rem; border-radius: 10px;">
-                <div style="font-weight: 800; font-size: 1rem; color: #38bdf8; margin-bottom: 0.2rem;">{role}</div>
-                <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.8rem;">Minister: <b>{data['name']}</b></div>
-                <div style="font-size: 0.85rem; margin-bottom: 0.3rem;">{loyalty_color} <b>Loyalty:</b> {data['loyalty']}%</div>
-            """, unsafe_allow_html=True)
-            
-            st.progress(max(0, min(100, data['loyalty'])) / 100)
-            
-            st.markdown(f"""
-                <div style="font-size: 0.8rem; color: #cbd5e1; margin-top: 0.8rem;">
-                    ⚡ <b>Competence:</b> {data['competence']}%<br>
-                    🔥 <b>Ambition:</b> {data['ambition']}%
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown(f"**{role}**")
+                st.caption(f"Minister: **{data['name']}**")
+                st.markdown(f"{loyalty_color} **Loyalty:** {data['loyalty']}%")
+                st.progress(max(0, min(100, data['loyalty'])) / 100)
+                st.markdown(f"⚡ **Competence:** {data['competence']}%\n\n🔥 **Ambition:** {data['ambition']}%")
 
     st.divider()
     
@@ -210,33 +195,45 @@ with tab5:
         st.caption(ev["description"])
         st.divider()
 
-# Direct Cabinet Action (5 Columns in 1 Row)
+# Direct Cabinet Action (5 Columns in 1 Row with Reliable Active Toggle & Clean Markdown Rendering)
 st.subheader("🎯 Direct Cabinet Action")
 st.caption("Select and execute executive directives to manage national metrics.")
+
+if "active_policies" not in state:
+    state["active_policies"] = set()
 
 pol_items = list(POLICIES.items())
 p_cols = st.columns(len(pol_items))
 
 for idx, (p_name, p_data) in enumerate(pol_items):
     with p_cols[idx]:
-        elaboration = p_data.get("elaboration", p_data.get("description", ""))
-        pros = p_data.get("pros", "Improves specific policy metrics.")
-        cons = p_data.get("cons", "Carries metric tradeoffs.")
+        is_active = p_name in state["active_policies"]
         
-        st.markdown(f"""
-        <div class="sc-card" style="min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.75rem;">
-            <div>
-                <div style="font-weight: 800; font-size: 0.88rem; color: #38bdf8; margin-bottom: 0.3rem;">{p_name}</div>
-                <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.3;">{elaboration}</div>
-                <div style="font-size: 0.72rem; margin-bottom: 0.2rem;">🟢 <b>Pros:</b> {pros}</div>
-                <div style="font-size: 0.72rem; margin-bottom: 0.5rem;">🔴 <b>Cons:</b> {cons}</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button(f"⚡ ENACT", key=f"pol_btn_{idx}", use_container_width=True, type="primary"):
-            apply_policy(game, p_name)
-            st.rerun()
+        # Native Streamlit border container prevents HTML escaping issues
+        with st.container(border=True):
+            if is_active:
+                st.markdown("🟢 **`✅ ACTIVE DIRECTIVE`**")
+            
+            st.markdown(f"### {p_name}")
+            
+            elaboration = p_data.get("elaboration", p_data.get("description", ""))
+            st.caption(elaboration)
+            
+            pros = p_data.get("pros", "Improves policy metrics.")
+            cons = p_data.get("cons", "Carries metric tradeoffs.")
+            
+            st.markdown(f"🟢 **Pros:** {pros}")
+            st.markdown(f"🔴 **Cons:** {cons}")
+            
+            # Interactive toggle button
+            btn_label = "✅ ACTIVE" if is_active else "⚡ ENACT"
+            if st.button(btn_label, key=f"pol_btn_{idx}", use_container_width=True, type="secondary" if is_active else "primary"):
+                if is_active:
+                    state["active_policies"].remove(p_name)
+                else:
+                    state["active_policies"].add(p_name)
+                    apply_policy(game, p_name)
+                st.rerun()
 
 st.divider()
 
