@@ -1,87 +1,57 @@
 import copy
+import random
 from engine.events import trigger_era_event
 
 POLICIES = {
     "Comprehensive Spending Review Cuts": {
-        "description": "Enforce strict departmental spending freezes across Whitehall to preserve fiscal headroom, severely angering public sector unions.",
-        "effects": {"debt": -6.0, "public_support": -7.0, "nhs_backlog": 5.0, "government_stability": -4.0}
+        "description": "Enforce strict departmental spending freezes across Whitehall to preserve fiscal headroom.",
+        "effects": {"debt": -5.0, "public_support": -6.0, "nhs_backlog": 4.0, "media_sentiment": -8.0}
     },
     "Emergency NHS Capital Injection": {
-        "description": "Direct emergency funding into hospital waiting lists and social care capacity, financed via short-term borrowing.",
-        "effects": {"nhs_backlog": -9.0, "public_support": 6.0, "debt": 4.5, "inflation": 0.5}
+        "description": "Direct emergency funding into hospital waiting lists and social care, financed via short-term borrowing.",
+        "effects": {"nhs_backlog": -10.0, "public_support": 7.0, "debt": 4.0, "media_sentiment": 5.0}
     },
     "Green Industrial Transition Subsidy": {
-        "description": "Subsidize renewable grid infrastructure and green tech startups to stimulate long-term productivity and foreign direct investment.",
-        "effects": {"gdp": 3.5, "fdi": 5.0, "unemployment": -1.2, "debt": 4.0}
+        "description": "Subsidize renewable grid infrastructure and tech startups to boost long-term productivity and FDI.",
+        "effects": {"gdp": 3.2, "fdi": 5.0, "unemployment": -1.0, "debt": 3.5}
     },
     "Bank of England Rate Defense": {
-        "description": "Coordinate closely with Threadneedle Street to signal tighter monetary policy and suppress persistent energy-driven inflation.",
-        "effects": {"inflation": -2.5, "growth": -1.2, "public_support": -3.0}
+        "description": "Coordinate with Threadneedle Street to signal tighter monetary policy and suppress persistent inflation.",
+        "effects": {"inflation": -2.2, "growth": -1.0, "public_support": -2.0}
     },
-    "Defense & Cyber Security Boost": {
-        "description": "Raise defense expenditure to counter rising international tensions and forge joint cybersecurity agreements with European allies.",
-        "effects": {"military_readiness": 8.0, "international_tension": -4.0, "debt": 4.0}
+    "Launch Media Defense Campaign": {
+        "description": "Deploy government spin doctors to saturate broadcast and print media, boosting public perception.",
+        "effects": {"media_sentiment": 15.0, "fiscal_headroom": -1.5, "public_support": 4.0}
     }
 }
 
 def create_uk_game(pm_name, ruling_party):
-    # Set party-specific baseline metrics & majorities based on 2024–2026 data
     if ruling_party == "Labour Party":
         seats = 348
         stability = 75.0
         approval = 54.0
-        cabinet = {
-            "Chancellor of the Exchequer": {"name": "Rachel Reeves", "loyalty": 75, "competence": 80},
-            "Foreign Secretary": {"name": "David Lammy", "loyalty": 70, "competence": 72},
-            "Health Secretary": {"name": "Wes Streeting", "loyalty": 65, "competence": 78},
-            "Home Secretary": {"name": "Yvette Cooper", "loyalty": 78, "competence": 74}
-        }
     elif ruling_party == "Conservative Party":
         seats = 121
         stability = 58.0
         approval = 42.0
-        cabinet = {
-            "Shadow Chancellor / Treasury": {"name": "Mel Stride", "loyalty": 70, "competence": 72},
-            "Foreign Affairs": {"name": "Priti Patel", "loyalty": 65, "competence": 68},
-            "Health": {"name": "Victoria Atkins", "loyalty": 68, "competence": 70},
-            "Home Department": {"name": "James Cleverly", "loyalty": 72, "competence": 75}
-        }
     elif ruling_party == "Liberal Democrats":
         seats = 72
         stability = 62.0
         approval = 46.0
-        cabinet = {
-            "Treasury Spokesperson": {"name": "Daisy Cooper", "loyalty": 80, "competence": 74},
-            "Foreign Affairs": {"name": "Layla Moran", "loyalty": 75, "competence": 70},
-            "Health Spokesperson": {"name": "Helen Morgan", "loyalty": 78, "competence": 72},
-            "Home Spokesperson": {"name": "Alistair Carmichael", "loyalty": 70, "competence": 75}
-        }
     elif ruling_party == "Reform UK":
         seats = 5
         stability = 50.0
         approval = 48.0
-        cabinet = {
-            "Chief Treasury Strategist": {"name": "Richard Tice", "loyalty": 85, "competence": 65},
-            "Foreign Affairs Lead": {"name": "Nigel Farage", "loyalty": 90, "competence": 70},
-            "Public Services Lead": {"name": "Rupert Lowe", "loyalty": 80, "competence": 60},
-            "Security Lead": {"name": "Lee Anderson", "loyalty": 85, "competence": 55}
-        }
-    else: # Green Party
+    else:
         seats = 4
         stability = 55.0
         approval = 45.0
-        cabinet = {
-            "Treasury & Climate Finance": {"name": "Carla Denyer", "loyalty": 85, "competence": 72},
-            "Foreign & Global Justice": {"name": "Adrian Ramsay", "loyalty": 82, "competence": 70},
-            "Public Services & NHS": {"name": "Zack Polanski", "loyalty": 80, "competence": 68},
-            "Home & Communities": {"name": "Ellie Chowns", "loyalty": 82, "competence": 70}
-        }
 
     return {
         "country_name": "United Kingdom",
         "leader": pm_name,
         "ruling_party": ruling_party,
-        "era": "Modern Era (UK Westminster)",
+        "era": "Modern Era (Westminster Simulation)",
         "state": {
             "turn": 1,
             "year": 2026,
@@ -96,6 +66,7 @@ def create_uk_game(pm_name, ruling_party):
                 "fiscal_headroom": 11.0,
                 "government_stability": stability,
                 "public_support": approval,
+                "media_sentiment": 50.0, # 0 (Hostile) to 100 (Favorable)
                 "legitimacy": 68.0,
                 "nhs_backlog": 62.0,
                 "fdi": 25.0,
@@ -103,7 +74,12 @@ def create_uk_game(pm_name, ruling_party):
                 "military_readiness": 58.0,
                 "international_tension": 35.0
             },
-            "cabinet": cabinet,
+            "cabinet": {
+                "Chancellor of the Exchequer": {"name": "Rachel Reeves", "loyalty": 75, "competence": 80, "ambition": 60},
+                "Foreign Secretary": {"name": "David Lammy", "loyalty": 70, "competence": 72, "ambition": 65},
+                "Health Secretary": {"name": "Wes Streeting", "loyalty": 65, "competence": 78, "ambition": 85},
+                "Home Secretary": {"name": "Yvette Cooper", "loyalty": 78, "competence": 74, "ambition": 50}
+            },
             "devolved_nations": {
                 "Scotland (Holyrood)": {"relations": 55, "unrest": 25},
                 "Wales (Senedd)": {"relations": 65, "unrest": 15},
@@ -124,15 +100,15 @@ def create_uk_game(pm_name, ruling_party):
                 "choices": [
                     {
                         "label": "Introduce Targeted Wealth and Capital Gains Adjustments",
-                        "effects": {"metrics.fiscal_headroom": 8.0, "metrics.debt": -3.0, "metrics.public_support": -8.0}
+                        "effects": {"metrics.fiscal_headroom": 8.0, "metrics.debt": -3.0, "metrics.public_support": -8.0, "metrics.media_sentiment": -10.0}
                     },
                     {
                         "label": "Implement Severe Whitehall Departmental Spending Freezes",
-                        "effects": {"metrics.fiscal_headroom": 6.0, "metrics.debt": -4.0, "metrics.nhs_backlog": 6.0, "metrics.public_support": -10.0}
+                        "effects": {"metrics.fiscal_headroom": 6.0, "metrics.debt": -4.0, "metrics.nhs_backlog": 6.0, "metrics.media_sentiment": -12.0}
                     },
                     {
                         "label": "Accept Deficit Expansion & Gilt Yield Risk",
-                        "effects": {"metrics.debt": 5.0, "metrics.inflation": 1.2, "metrics.public_support": 4.0}
+                        "effects": {"metrics.debt": 5.0, "metrics.inflation": 1.2, "metrics.public_support": 4.0, "metrics.media_sentiment": 5.0}
                     }
                 ]
             }
@@ -143,12 +119,45 @@ def advance_turn(game):
     state = game["state"]
     metrics = state["metrics"]
     
+    # Economic and media drift
     growth_drift = (metrics["government_stability"] - 50) * 0.015 - (metrics["inflation"] * 0.05)
     metrics["growth"] = round(max(-4.0, min(6.0, 1.3 + growth_drift)), 2)
     metrics["gdp"] *= (1.0 + metrics["growth"] / 100.0)
     metrics["fiscal_headroom"] = round(metrics["fiscal_headroom"] + (metrics["growth"] * 1.5) - (metrics["debt"] * 0.02), 1)
     
+    # Media sentiment naturally drifts toward public support
+    metrics["media_sentiment"] = round(metrics["media_sentiment"] * 0.9 + metrics["public_support"] * 0.1, 1)
+
     state["turn"] += 1
+    
+    # Annual Budget Check every 12 turns (Decembers)
+    if state["turn"] % 12 == 0:
+        state["active_dilemma"] = {
+            "id": "annual_budget_review",
+            "title": f"The Annual Chancellor's Budget & Comprehensive Review ({state['year']})",
+            "description": "It is time for the Chancellor's major fiscal statement. You must set tax thresholds and departmental allocations under OBR scrutiny.",
+            "choices": [
+                {
+                    "label": "Expansionary Tax Cuts & Public Investment",
+                    "effects": {"metrics.debt": 8.0, "metrics.growth": 2.0, "metrics.public_support": 10.0, "metrics.media_sentiment": 8.0}
+                },
+                {
+                    "label": "Orthodox Fiscal Balance & Deficit Reduction",
+                    "effects": {"metrics.debt": -7.0, "metrics.growth": -1.0, "metrics.public_support": -9.0, "metrics.media_sentiment": -5.0}
+                }
+            ]
+        }
+
+    # By-election check (random constituency swing)
+    if random.random() < 0.3:
+        seat_change = random.choice([-2, -1, 1, 2])
+        state["majority_seats"] += seat_change
+        state["events"].append({
+            "year": state["year"],
+            "title": "Parliamentary By-Election Result",
+            "description": f"A fiercely contested regional by-election concludes. Net change in working majority seats: {seat_change:+d}."
+        })
+
     state["history"].append({
         "year": state["year"],
         "gdp": metrics["gdp"],
