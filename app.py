@@ -47,7 +47,7 @@ game = st.session_state.game
 state = game["state"]
 metrics = state["metrics"]
 
-# Sidebar with Continuous Autoplay Stress-Test Loop
+# Sidebar with Autoplay Safety Halt
 with st.sidebar:
     st.markdown("### 🏛️ 10 Downing Street")
     st.write(f"**PM:** {game['leader']}")
@@ -62,10 +62,17 @@ with st.sidebar:
     speed_steps = st.slider("Months per tick", 1, 12, 1)
     
     if autoplay:
+        # If a crisis hits, halt autoplay immediately so the user can interact/choose
         if state.get("active_dilemma") is not None:
-            resolve_dilemma(state, 0)
+            st.warning("⚠️ Cabinet crisis detected! Autoplay halted for decision.")
+            time.sleep(1.0)
+            st.rerun()
         
         for _ in range(speed_steps):
+            # Check mid-loop as well
+            if state.get("active_dilemma") is not None:
+                break
+                
             state["month"] += 1
             if state["month"] > 12:
                 state["month"] = 1
