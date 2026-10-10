@@ -80,11 +80,17 @@ if active_dilemma:
     cols = st.columns(len(active_dilemma["choices"]))
     for idx, (col, choice) in enumerate(zip(cols, active_dilemma["choices"])):
         with col:
-            # ---> PUT THE SNIPPET RIGHT HERE <---
             st.markdown(f"**Option {idx+1}: {choice['label']}**")
-            st.caption(choice["elaboration"])
-            st.markdown(f"🟢 **Pros:** {choice['pros']}")
-            st.markdown(f"🔴 **Cons:** {choice['cons']}")
+            
+            # Safely fallback if elaboration/pros/cons are missing from old/annual budget events
+            elaboration = choice.get("elaboration", "Execute this executive directive to navigate current fiscal pressures.")
+            pros = choice.get("pros", "Helps stabilize specific national metrics.")
+            cons = choice.get("cons", "Carries hidden political or economic tradeoffs.")
+            
+            st.caption(elaboration)
+            st.markdown(f"🟢 **Pros:** {pros}")
+            st.markdown(f"🔴 **Cons:** {cons}")
+            
             if st.button(f"👉 Select Option {idx+1}", key=f"d_btn_{idx}", use_container_width=True):
                 resolve_dilemma(state, idx)
                 st.rerun()
