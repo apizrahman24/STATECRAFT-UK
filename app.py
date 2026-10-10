@@ -213,10 +213,12 @@ with tab5:
 
 # Policy Deck & Turn Advancement
 st.subheader("🎯 Direct Cabinet Action")
-p_col1, p_col2 = st.columns([3, 1])
+p_col1, p_col2 = st.columns([2, 1])
 with p_col1:
-    selected_pol = st.selectbox("Select Directive", list(POLICIES.keys()), label_visibility="collapsed")
+    selected_pol = st.selectbox("Select Cabinet Directive", list(POLICIES.keys()))
 with p_col2:
+    # Pushes button down to align vertically with the selectbox
+    st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
     if st.button("⚡ ENACT POLICY", type="primary", use_container_width=True):
         apply_policy(game, selected_pol)
         st.rerun()
