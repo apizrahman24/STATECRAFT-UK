@@ -131,7 +131,7 @@ for i, (label, val) in enumerate(snapshot):
 st.divider()
 
 # Direct Cabinet Action (Collapsible & Moved Above Tabs)
-with st.expander("🎯 Direct Cabinet Action (Executive Directives)", expanded=True):
+with st.expander("🎯 Direct Cabinet Action (Executive Directives)", expanded=False):
     st.caption("Select and execute executive directives to manage national metrics.")
 
     if "active_policies" not in state:
