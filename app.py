@@ -26,32 +26,16 @@ if "game" not in st.session_state:
 
 if st.session_state.game is None:
     st.title("🇬🇧 STATECRAFT: Westminster Executive")
-    st.subheader("Win the election, form your government, and steer the United Kingdom.")
+    st.subheader("Win the election, manage parliament, and survive Downing Street.")
     st.divider()
     
     col1, col2 = st.columns(2)
     with col1:
         pm_name = st.text_input("Prime Minister Name", "Andy Burnham")
-        party = st.selectbox("Ruling Party / Political Alignment", [
-            "Labour Party",
-            "Conservative Party",
-            "Liberal Democrats",
-            "Reform UK",
-            "Green Party"
-        ])
+        party = st.selectbox("Ruling Party", ["Labour Party", "Conservative Party", "Liberal Democrats", "Reform UK", "Green Party"])
     with col2:
-        st.markdown("### 🏛️ Government Mandate")
-        if party == "Labour Party":
-        # Based on 2024 UK general election composition
-            st.caption("Center-Left • Large Parliamentary Majority (348 seats) • Focus on Public Services & Growth")
-        elif party == "Conservative Party":
-            st.caption("Centre-Right • Opposition / Reduced Seats (121 seats) • Focus on Tax Cuts & Free Enterprise")
-        elif party == "Liberal Democrats":
-            st.caption("Centrist / Social Liberal • Third Party (72 seats) • Focus on Electoral Reform & Public Investment")
-        elif party == "Reform UK":
-            st.caption("Right-Wing Populist • Insurgent Force (5 seats) • Focus on Border Control & State Sovereignty")
-        else:
-            st.caption("Eco-Socialist / Left-Wing • Progressive Bloc (4 seats) • Focus on Green Transition & Wealth Redistribution")
+        st.markdown("### 🏛️ Mandate Preview")
+        st.caption("Manage backbench MPs, media scrutiny, devolved nations, and annual budgets.")
 
     if st.button("🏛️ ENTER 10 DOWNING STREET", type="primary", use_container_width=True):
         st.session_state.game = create_uk_game(pm_name, party)
@@ -67,7 +51,7 @@ with st.sidebar:
     st.markdown("### 🏛️ 10 Downing Street")
     st.write(f"**PM:** {game['leader']}")
     st.write(f"**Party:** {game['ruling_party']}")
-    st.write(f"**Majority Seats:** {state['majority_seats']}")
+    st.write(f"**Working Majority:** {state['majority_seats']} seats")
     st.caption(f"📅 Month {state['month']}, Year {state['year']}")
     st.divider()
     if st.button("🔄 Reset Campaign", use_container_width=True):
@@ -87,7 +71,7 @@ active_dilemma = state.get("active_dilemma")
 if active_dilemma:
     st.markdown(f"""
     <div class="sc-alert">
-        <div style="font-weight: 800; font-size: 1.05rem; color: #f87171;">🚨 CABINET CRISIS: {active_dilemma["title"]}</div>
+        <div style="font-weight: 800; font-size: 1.05rem; color: #f87171;">🚨 {active_dilemma["title"]}</div>
         <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 0.3rem;">{active_dilemma["description"]}</div>
     </div>
     """, unsafe_allow_html=True)
@@ -106,10 +90,10 @@ snapshot = [
     ("Inflation (CPI)", f"{metrics['inflation']:.1f}%"),
     ("Fiscal Headroom", f"£{metrics['fiscal_headroom']:.1f}bn"),
     ("National Debt", f"{metrics['debt']:.1f}%"),
-    ("Government Stability", f"{metrics['stability'] if 'stability' in metrics else metrics['government_stability']:.1f}"),
+    ("Government Stability", f"{metrics['government_stability']:.1f}"),
     ("Public Approval", f"{metrics['public_support']:.1f}%"),
-    ("NHS Backlog Index", f"{metrics['nhs_backlog']:.1f}"),
-    ("Foreign Direct Investment", f"£{metrics['fdi']}bn")
+    ("Media Sentiment", f"{metrics['media_sentiment']:.1f}/100"),
+    ("NHS Backlog Index", f"{metrics['nhs_backlog']:.1f}")
 ]
 
 m_cols = st.columns(4)
@@ -122,13 +106,24 @@ for i, (label, val) in enumerate(snapshot):
         </div>
         """, unsafe_allow_html=True)
 
-# Tabs
-tab1, tab2, tab3 = st.tabs(["🏛️ Executive Cabinet", "🗺️ Devolved Administrations", "📰 Dispatch Archive"])
+# Tabs for Cabinet Reshuffles & Devolved Administrations
+tab1, tab2, tab3 = st.tabs(["🏛️ Executive Cabinet & Reshuffle", "🗺️ Devolved Administrations", "📰 Dispatch Archive"])
 
 with tab1:
     st.subheader("Cabinet Ministers & Loyalty")
     cab_df = pd.DataFrame(state["cabinet"]).T
     st.dataframe(cab_df, use_container_width=True)
+    
+    st.markdown("### 🔄 Execute Cabinet Reshuffle")
+    res_col1, res_col2 = st.columns(2)
+    with res_col1:
+        target_minister = st.selectbox("Select Minister to Reassign / Promote", list(state["cabinet"].keys()))
+    with res_col2:
+        if st.button("⚖️ Realign Departmental Portfolio (+5 Loyalty, -5 Ambition)", use_container_width=True):
+            state["cabinet"][target_minister]["loyalty"] = min(100, state["cabinet"][target_minister]["loyalty"] + 5)
+            state["cabinet"][target_minister]["ambition"] = max(0, state["cabinet"][target_minister]["ambition"] - 5)
+            st.success(f"Successfully restructured {target_minister}'s portfolio.")
+            st.rerun()
 
 with tab2:
     st.subheader("Devolved Nations & Relations")
