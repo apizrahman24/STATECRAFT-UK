@@ -5,38 +5,38 @@ from engine.politics import initialize_factions, simulate_faction_drift, check_l
 
 POLICIES = {
     "Comprehensive Spending Review Cuts": {
-        "description": "Enforce strict departmental spending freezes across Whitehall to preserve fiscal headroom.",
-        "elaboration": "Instruct the Treasury to implement across-the-board 3% departmental budget freezes for non-ringfenced Whitehall ministries.",
-        "pros": "Shrinks national debt (**Debt -5.0%**) and stabilizes long-term fiscal credibility.",
-        "cons": "Severely damages public service delivery (**NHS Backlog +4.0**), triggers hostile press headlines (**Media -8.0**), and erodes voter approval (**Public Support -6.0**).",
+        "description": "Enforce strict spending freezes across Whitehall to preserve fiscal headroom.",
+        "elaboration": "Implement across-the-board 3% departmental budget freezes for non-ringfenced ministries.",
+        "pros": "Shrinks national debt (**Debt -5.0%**) and shores up fiscal credibility.",
+        "cons": "Damages public services (**NHS Backlog +4.0**) and hurts voter approval (**Public Support -6.0**).",
         "effects": {"debt": -5.0, "public_support": -6.0, "nhs_backlog": 4.0, "media_sentiment": -8.0}
     },
     "Emergency NHS Capital Injection": {
-        "description": "Direct emergency funding into hospital waiting lists and social care, financed via short-term borrowing.",
-        "elaboration": "Authorize a £4bn emergency Treasury grant directly to NHS England acute hospital trusts to fund weekend overtime and surgical backlog clearance.",
-        "pros": "Rapidly decreases hospital waiting lists (**NHS Backlog -10.0**) and builds immediate public goodwill (**Public Support +7.0**).",
+        "description": "Direct emergency funding into hospital waiting lists and surgical backlogs.",
+        "elaboration": "Authorize a £4bn emergency Treasury grant to NHS acute trusts for weekend overtime and waiting list clearance.",
+        "pros": "Rapidly decreases hospital waiting lists (**NHS Backlog -10.0**) and boosts public goodwill (**Public Support +7.0**).",
         "cons": "Increases short-term government borrowing (**Debt +4.0%**).",
         "effects": {"nhs_backlog": -10.0, "public_support": 7.0, "debt": 4.0, "media_sentiment": 5.0}
     },
     "Green Industrial Transition Subsidy": {
-        "description": "Subsidize renewable grid infrastructure and tech startups to boost long-term productivity and FDI.",
-        "elaboration": "Deploy capital grants and tax allowances to private clean-tech developers building offshore wind and battery storage networks.",
-        "pros": "Drives long-term growth (**GDP +3.2%**), attracts global capital (**FDI +5.0**), and creates green industrial jobs (**Unemployment -1.0%**).",
+        "description": "Subsidize renewable grid infrastructure and clean-tech startups to boost productivity.",
+        "elaboration": "Deploy capital grants and tax allowances to private developers building offshore wind and battery networks.",
+        "pros": "Drives long-term growth (**GDP +3.2%**), attracts global capital (**FDI +5.0**), and creates green jobs (**Unemployment -1.0%**).",
         "cons": "Requires additional state borrowing (**Debt +3.5%**).",
         "effects": {"gdp": 3.2, "fdi": 5.0, "unemployment": -1.0, "debt": 3.5}
     },
     "Bank of England Rate Defense": {
-        "description": "Coordinate with Threadneedle Street to signal tighter monetary policy and suppress persistent inflation.",
+        "description": "Coordinate with Threadneedle Street to signal tighter monetary policy.",
         "effects": {"inflation": -2.2, "growth": -1.0, "public_support": -2.0},
-        "elaboration": "Issue formal Treasury guidance endorsing tight interest rate targets to tame core service inflation.",
+        "elaboration": "Issue formal Treasury guidance endorsing tight interest rate targets to tame core inflation.",
         "pros": "Cools down cost-of-living pressures (**Inflation -2.2%**).",
-        "cons": "Dampens short-term economic momentum (**GDP Growth -1.0%**) and slightly lowers public approval (**Public Support -2.0**)."
+        "cons": "Dampens short-term economic momentum (**GDP Growth -1.0%**)."
     },
     "Launch Media Defense Campaign": {
-        "description": "Deploy government spin doctors to saturate broadcast and print media, boosting public perception.",
-        "elaboration": "Mobilize Downing Street communications staff to coordinate major media appearances and defend key government policies.",
-        "pros": "Dramatically improves national media coverage (**Media Sentiment +15.0**) and lifts government support (**Public Support +4.0**).",
-        "cons": "Uses up administrative resources and fiscal headroom (**Fiscal Headroom -£1.5bn**).",
+        "description": "Deploy government spin doctors to saturate broadcast and print media.",
+        "elaboration": "Mobilize Downing Street communications staff to coordinate media appearances defending policies.",
+        "pros": "Improves national media coverage (**Media Sentiment +15.0**) and lifts support (**Public Support +4.0**).",
+        "cons": "Consumes administrative resources and fiscal headroom (**Fiscal Headroom -£1.5bn**).",
         "effects": {"media_sentiment": 15.0, "fiscal_headroom": -1.5, "public_support": 4.0}
     }
 }
@@ -113,27 +113,27 @@ def create_uk_game(pm_name, ruling_party):
             "active_dilemma": {
                 "id": "uk_dil_autumn_budget",
                 "title": "The Autumn Budget & Fiscal Headroom Crisis",
-                "description": "The Office for Budget Responsibility (OBR) warns that public pay settlements and energy price volatility have squeezed fiscal headroom down to £7bn. Treasury officials present three fiscal paths.",
+                "description": "The OBR warns that pay settlements and energy volatility have squeezed fiscal headroom down to £7bn. Treasury officials present three paths.",
                 "choices": [
                     {
-                        "label": "Introduce Targeted Wealth and Capital Gains Adjustments",
-                        "elaboration": "Instruct the Chancellor to raise rates on Capital Gains Tax (CGT), carried interest, and high-value dividend yields to fund frontline public spending.",
-                        "pros": "Protects core departmental budgets, unlocks **£8.0bn Fiscal Headroom**, and shrinks national debt.",
-                        "cons": "Triggers fierce backlash from City of London investors and business lobbies (**Public Approval -8.0**, **Media Sentiment -10.0**).",
+                        "label": "Introduce Targeted Wealth and CGT Adjustments",
+                        "elaboration": "Raise rates on Capital Gains Tax and dividend yields to fund frontline public services.",
+                        "pros": "Protects core departments, unlocks **£8.0bn Fiscal Headroom**, and reduces debt.",
+                        "cons": "Triggers City backlash and hostile media headlines (**Public Support -8.0**, **Media -10.0**).",
                         "effects": {"metrics.fiscal_headroom": 8.0, "metrics.debt": -3.0, "metrics.public_support": -8.0, "metrics.media_sentiment": -10.0}
                     },
                     {
-                        "label": "Implement Severe Whitehall Departmental Spending Freezes",
-                        "elaboration": "Enforce strict nominal budget freezes across non-protected Whitehall departments (Transport, Justice, Local Government) to enforce fiscal discipline.",
-                        "pros": "Preserves Treasury credibility, signals fiscal orthodoxy to bond markets, and lowers public debt (**Debt -4.0**).",
-                        "cons": "Starves public infrastructure, accelerates local council distress, and worsens waiting lists (**NHS Backlog +6.0**, **Media Sentiment -12.0**).",
+                        "label": "Implement Severe Whitehall Spending Freezes",
+                        "elaboration": "Enforce strict nominal budget freezes across non-protected departments.",
+                        "pros": "Preserves Treasury credibility, signals fiscal orthodoxy, and lowers public debt (**Debt -4.0**).",
+                        "cons": "Starves public infrastructure and worsens waiting lists (**NHS Backlog +6.0**, **Media -12.0**).",
                         "effects": {"metrics.fiscal_headroom": 6.0, "metrics.debt": -4.0, "metrics.nhs_backlog": 6.0, "metrics.media_sentiment": -12.0}
                     },
                     {
                         "label": "Accept Deficit Expansion & Gilt Yield Risk",
-                        "elaboration": "Bypass immediate fiscal tightening by increasing gilt sales, borrowing through the Debt Management Office to shield households from tax increases.",
-                        "pros": "Avoids unpopular spending cuts or tax hikes, providing short-term political breathing room (**Public Support +4.0**).",
-                        "cons": "Spikes national borrowing (**Debt +5.0**), fuels sticky inflationary pressures (**Inflation +1.2%**), and risks spiking gilt yields.",
+                        "elaboration": "Bypass fiscal tightening by increasing gilt sales through the Debt Management Office.",
+                        "pros": "Avoids unpopular spending cuts or tax hikes, providing short-term political relief (**Public Support +4.0**).",
+                        "cons": "Spikes national borrowing (**Debt +5.0**) and fuels inflationary pressures (**Inflation +1.2%**).",
                         "effects": {"metrics.debt": 5.0, "metrics.inflation": 1.2, "metrics.public_support": 4.0, "metrics.media_sentiment": 5.0}
                     }
                 ]
@@ -145,22 +145,20 @@ def advance_turn(game):
     state = game["state"]
     metrics = state["metrics"]
     
-    # Simulate factional drift
     simulate_faction_drift(state)
     
-    # Check for internal leadership challenge triggered by backbench factions
     if check_leadership_challenge(state):
         state["active_dilemma"] = {
             "id": "leadership_challenge",
             "title": "🚨 INTERNAL PARTY LEADERSHIP CHALLENGE",
-            "description": "Deep dissatisfaction among your backbench factions has reached boiling point! Ambitious rivals are circulating letters of no confidence in your leadership.",
+            "description": "Deep backbench dissatisfaction reaches a boiling point as ambitious rivals circulate letters of no confidence.",
             "choices": [
                 {
-                    "label": "Offer Major Policy Concessions & Cabinet Post Upgrades",
+                    "label": "Offer Major Policy Concessions & Cabinet Upgrades",
                     "effects": {"metrics.government_stability": 10.0, "metrics.fiscal_headroom": -3.0, "metrics.public_support": 3.0}
                 },
                 {
-                    "label": "Fight the Challenge Head-On & Expel Rebels from the Whip",
+                    "label": "Fight Challenge Head-On & Expel Rebels",
                     "effects": {"metrics.government_stability": -15.0, "metrics.media_sentiment": -10.0, "metrics.majority_seats": -12}
                 }
             ]
@@ -178,7 +176,7 @@ def advance_turn(game):
     if state["turn"] % 12 == 0:
         state["active_dilemma"] = {
             "id": "annual_budget_review",
-            "title": f"The Annual Chancellor's Budget & Comprehensive Review ({state['year']})",
+            "title": f"Annual Chancellor's Budget Review ({state['year']})",
             "description": "It is time for the Chancellor's major fiscal statement under OBR scrutiny.",
             "choices": [
                 {
