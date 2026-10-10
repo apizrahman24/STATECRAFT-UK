@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from engine.game import create_uk_game, advance_turn, apply_policy, POLICIES
+from engine.game import create_uk_game, advance_turn, apply_policy, POLICIES, DEVOLVED_ACTIONS, apply_devolved_action
 from engine.events import resolve_dilemma
 
 st.set_page_config(
@@ -170,14 +170,37 @@ with tab2:
         st.write("")
 
 with tab3:
-    st.subheader("Devolved Nations & Relations")
+    st.subheader("Devolved Administrations & Intergovernmental Relations")
+    st.caption("Manage relations and unrest with Holyrood, the Senedd, and Stormont to prevent regional crises.")
+    
     for nation, data in state["devolved_nations"].items():
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown(f"**{nation}**")
-            st.metric("Relations Score", f"{data['relations']}/100")
-        with col2:
-            st.metric("Unrest Index", f"{data['unrest']}%", delta_color="inverse")
+        with st.container(border=True):
+            st.markdown(f"### 🗺️ {nation}")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                rel_val = data['relations']
+                rel_color = "🟢 Stable" if rel_val > 60 else ("🟡 Strained" if rel_val > 40 else "🔴 Hostile")
+                st.metric("Relations Score", f"{rel_val}/100", delta=rel_color)
+                st.progress(max(0, min(100, rel_val)) / 100)
+            with col2:
+                unrest_val = data['unrest']
+                unrest_color = "🟢 Calm" if unrest_val < 30 else ("🟡 Restless" if unrest_val < 60 else "🔴 Critical")
+                st.metric("Unrest Index", f"{unrest_val}%", delta=unrest_color, delta_color="inverse")
+                st.progress(max(0, min(100, unrest_val)) / 100)
+            
+            st.markdown("#### ⚡ Intergovernmental Actions")
+            act_cols = st.columns(len(DEVOLVED_ACTIONS))
+            for a_idx, (act_name, act_data) in enumerate(DEVOLVED_ACTIONS.items()):
+                with act_cols[a_idx]:
+                    st.caption(f"Cost: £{act_data['cost_headroom']}bn")
+                    if st.button(act_name, key=f"dev_{nation}_{a_idx}", use_container_width=True):
+                        success = apply_devolved_action(game, nation, act_name)
+                        if success:
+                            st.success(f"Executed {act_name} for {nation}.")
+                            st.rerun()
+                        else:
+                            st.error("Insufficient Fiscal Headroom!")
         st.divider()
 
 with tab4:
@@ -195,7 +218,7 @@ with tab5:
         st.caption(ev["description"])
         st.divider()
 
-# Direct Cabinet Action (5 Columns in 1 Row with Aligned Card Heights & Fixed Buttons)
+# Direct Cabinet Action (5 Columns in 1 Row with Aligned Heights & Active Green State)
 st.subheader("🎯 Direct Cabinet Action")
 st.caption("Select and execute executive directives to manage national metrics.")
 
@@ -217,7 +240,6 @@ for idx, (p_name, p_data) in enumerate(pol_items):
         pros = p_data.get("pros", "Improves policy metrics.").replace("**", "")
         cons = p_data.get("cons", "Carries metric tradeoffs.").replace("**", "")
         
-        # HTML card container with fixed height flexbox alignment
         st.markdown(f"""
         <div style="background: {bg_color}; border: 1px solid {border_color}; border-radius: 10px; padding: 0.85rem; min-height: 380px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem;">
             <div>
@@ -230,7 +252,6 @@ for idx, (p_name, p_data) in enumerate(pol_items):
         </div>
         """, unsafe_allow_html=True)
         
-        # Action button pinned directly beneath the fixed card box
         btn_label = "✅ ACTIVE" if is_active else "⚡ ENACT"
         if st.button(btn_label, key=f"pol_btn_{idx}", use_container_width=True, type="secondary" if is_active else "primary"):
             if is_active:
