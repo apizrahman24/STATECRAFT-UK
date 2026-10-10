@@ -41,6 +41,46 @@ POLICIES = {
     }
 }
 
+DEVOLVED_ACTIONS = {
+    "Increase Block Grant Allocation": {
+        "description": "Bypass local friction by increasing the Barnett formula block grant allocation.",
+        "cost_headroom": 2.0,
+        "effects": {"relations": 12, "unrest": -10}
+    },
+    "Bilateral Constitutional Summit": {
+        "description": "Invite First Ministers to 10 Downing Street for direct negotiations to defuse tensions.",
+        "cost_headroom": 0.5,
+        "effects": {"relations": 8, "unrest": -5}
+    },
+    "Invoke Westminster Override / Veto": {
+        "description": "Assert parliamentary sovereignty to override contentious local legislation.",
+        "cost_headroom": 0.0,
+        "effects": {"relations": -15, "unrest": 10}
+    }
+}
+
+def apply_devolved_action(game, nation_name, action_name):
+    state = game["state"]
+    action = DEVOLVED_ACTIONS.get(action_name)
+    if not action:
+        return False
+    
+    if state["metrics"]["fiscal_headroom"] < action["cost_headroom"]:
+        return False
+        
+    state["metrics"]["fiscal_headroom"] -= action["cost_headroom"]
+    nation = state["devolved_nations"][nation_name]
+    
+    nation["relations"] = max(0, min(100, nation["relations"] + action["effects"]["relations"]))
+    nation["unrest"] = max(0, min(100, nation["unrest"] + action["effects"]["unrest"]))
+    
+    state["events"].append({
+        "year": state["year"],
+        "title": f"Devolved Policy: {nation_name} - {action_name}",
+        "description": action["description"]
+    })
+    return True
+
 def create_uk_game(pm_name, ruling_party):
     if ruling_party == "Labour Party":
         seats = 348
