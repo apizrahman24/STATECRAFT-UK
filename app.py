@@ -215,32 +215,43 @@ with tab5:
 st.subheader("🎯 Direct Cabinet Action")
 st.caption("Select and execute executive directives to manage national metrics.")
 
-# Display policies as cards in a 2-column or 3-column grid
+# Display all 5 policies side-by-side in a single row of 5 columns
 pol_items = list(POLICIES.items())
-p_cols = st.columns(2)  # Displays 2 policy cards per row
+p_cols = st.columns(len(pol_items))
 
 for idx, (p_name, p_data) in enumerate(pol_items):
-    col = p_cols[idx % 2]
-    with col:
+    with p_cols[idx]:
         elaboration = p_data.get("elaboration", p_data.get("description", ""))
         pros = p_data.get("pros", "Improves specific policy metrics.")
         cons = p_data.get("cons", "Carries metric tradeoffs.")
         
         st.markdown(f"""
-        <div class="sc-card" style="min-height: 230px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 1rem;">
+        <div class="sc-card" style="min-height: 280px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.75rem;">
             <div>
-                <div style="font-weight: 800; font-size: 1rem; color: #38bdf8; margin-bottom: 0.4rem;">{p_name}</div>
-                <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.6rem;">{elaboration}</div>
-                <div style="font-size: 0.82rem; margin-bottom: 0.3rem;">🟢 <b>Pros:</b> {pros}</div>
-                <div style="font-size: 0.82rem; margin-bottom: 0.6rem;">🔴 <b>Cons:</b> {cons}</div>
+                <div style="font-weight: 800; font-size: 0.9rem; color: #38bdf8; margin-bottom: 0.3rem;">{p_name}</div>
+                <div style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.3;">{elaboration}</div>
+                <div style="font-size: 0.75rem; margin-bottom: 0.2rem;">🟢 <b>Pros:</b> {pros}</div>
+                <div style="font-size: 0.75rem; margin-bottom: 0.5rem;">🔴 <b>Cons:</b> {cons}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button(f"⚡ ENACT: {p_name}", key=f"pol_btn_{idx}", use_container_width=True, type="primary"):
+        if st.button(f"⚡ ENACT", key=f"pol_btn_{idx}", use_container_width=True, type="primary"):
             apply_policy(game, p_name)
             st.rerun()
 
+st.divider()
+
+if state.get("active_dilemma") is not None:
+    st.warning("⚠️ You must resolve the active cabinet crisis above before advancing the month!")
+else:
+    if st.button("⏩ ADVANCE MONTH", type="primary", use_container_width=True):
+        state["month"] += 1
+        if state["month"] > 12:
+            state["month"] = 1
+            state["year"] += 1
+        advance_turn(game)
+        st.rerun()
 st.divider()
 
 if state.get("active_dilemma") is not None:
