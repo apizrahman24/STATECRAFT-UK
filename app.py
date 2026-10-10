@@ -1,4 +1,3 @@
-import time
 import pandas as pd
 import streamlit as st
 from engine.game import create_uk_game, advance_turn, apply_policy, POLICIES
@@ -47,7 +46,7 @@ game = st.session_state.game
 state = game["state"]
 metrics = state["metrics"]
 
-# Sidebar with Autoplay Safety Halt
+# Sidebar
 with st.sidebar:
     st.markdown("### 🏛️ 10 Downing Street")
     st.write(f"**PM:** {game['leader']}")
@@ -56,34 +55,6 @@ with st.sidebar:
     st.caption(f"📅 Month {state['month']}, Year {state['year']}")
     st.divider()
     
-    # --- AUTOPLAY / STRESS TEST CONTROLS ---
-    st.markdown("### ⚡ Stress-Test Engine")
-    autoplay = st.toggle("Autoplay Simulation", value=False)
-    speed_steps = st.slider("Months per tick", 1, 12, 1)
-    
-    if autoplay:
-        # If a crisis hits, halt autoplay immediately so the user can interact/choose
-        if state.get("active_dilemma") is not None:
-            st.warning("⚠️ Cabinet crisis detected! Autoplay halted for decision.")
-            time.sleep(1.0)
-            st.rerun()
-        
-        for _ in range(speed_steps):
-            # Check mid-loop as well
-            if state.get("active_dilemma") is not None:
-                break
-                
-            state["month"] += 1
-            if state["month"] > 12:
-                state["month"] = 1
-                state["year"] += 1
-            advance_turn(game)
-            
-        time.sleep(0.4)
-        st.rerun()
-    # ---------------------------------------
-
-    st.divider()
     if st.button("🔄 Reset Campaign", use_container_width=True):
         st.session_state.game = None
         st.rerun()
