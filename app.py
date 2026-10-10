@@ -26,7 +26,7 @@ if "game" not in st.session_state:
 
 if st.session_state.game is None:
     st.title("🇬🇧 STATECRAFT: Westminster Executive")
-    st.subheader("Win the election, manage parliament, and survive Downing Street.")
+    st.subheader("Win the election, manage factions, and survive Downing Street.")
     st.divider()
     
     col1, col2 = st.columns(2)
@@ -35,7 +35,7 @@ if st.session_state.game is None:
         party = st.selectbox("Ruling Party", ["Labour Party", "Conservative Party", "Liberal Democrats", "Reform UK", "Green Party"])
     with col2:
         st.markdown("### 🏛️ Mandate Preview")
-        st.caption("Manage backbench MPs, media scrutiny, devolved nations, and annual budgets.")
+        st.caption("Manage backbench MP factions, cabinet loyalty, media scrutiny, and devolved administrations.")
 
     if st.button("🏛️ ENTER 10 DOWNING STREET", type="primary", use_container_width=True):
         st.session_state.game = create_uk_game(pm_name, party)
@@ -106,8 +106,8 @@ for i, (label, val) in enumerate(snapshot):
         </div>
         """, unsafe_allow_html=True)
 
-# Tabs for Cabinet Reshuffles & Devolved Administrations
-tab1, tab2, tab3 = st.tabs(["🏛️ Executive Cabinet & Reshuffle", "🗺️ Devolved Administrations", "📰 Dispatch Archive"])
+# Tabs for Factions, Cabinet Reshuffles & Devolved Administrations
+tab1, tab2, tab3, tab4 = st.tabs(["🏛️ Executive Cabinet", "👥 Backbench Factions", "🗺️ Devolved Administrations", "📰 Dispatch Archive"])
 
 with tab1:
     st.subheader("Cabinet Ministers & Loyalty")
@@ -117,20 +117,26 @@ with tab1:
     st.markdown("### 🔄 Execute Cabinet Reshuffle")
     res_col1, res_col2 = st.columns(2)
     with res_col1:
-        target_minister = st.selectbox("Select Minister to Reassign / Promote", list(state["cabinet"].keys()))
+        target_minister = st.selectbox("Select Minister to Reassign", list(state["cabinet"].keys()))
     with res_col2:
-        if st.button("⚖️ Realign Departmental Portfolio (+5 Loyalty, -5 Ambition)", use_container_width=True):
+        if st.button("⚖️ Realign Portfolio (+5 Loyalty, -5 Ambition)", use_container_width=True):
             state["cabinet"][target_minister]["loyalty"] = min(100, state["cabinet"][target_minister]["loyalty"] + 5)
             state["cabinet"][target_minister]["ambition"] = max(0, state["cabinet"][target_minister]["ambition"] - 5)
             st.success(f"Successfully restructured {target_minister}'s portfolio.")
             st.rerun()
 
 with tab2:
+    st.subheader("Ruling Party Factional Breakdown & Happiness")
+    fact_df = pd.DataFrame(state["factions"]).T
+    st.dataframe(fact_df, use_container_width=True)
+    st.caption("Keep faction happiness above 45% to prevent coordinated backbench rebellions and leadership challenges.")
+
+with tab3:
     st.subheader("Devolved Nations & Relations")
     dev_df = pd.DataFrame(state["devolved_nations"]).T
     st.dataframe(dev_df, use_container_width=True)
 
-with tab3:
+with tab4:
     st.subheader("Historical Dispatch Log")
     for ev in reversed(state["events"][-6:]):
         st.markdown(f"**[{ev['year']}] {ev['title']}**")
