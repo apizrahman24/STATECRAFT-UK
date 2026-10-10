@@ -123,25 +123,38 @@ for i, (label, val) in enumerate(snapshot):
         </div>
         """, unsafe_allow_html=True)
 
-# Tabs with Visual UIs (Cabinet Bars, Faction Happiness Meters, Trend Charts)
+# Tabs with Visual UIs (Cabinet Columns, Faction Happiness Meters, Trend Charts)
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏛️ Executive Cabinet", "👥 Backbench Factions", "🗺️ Devolved Administrations", "📈 Economic Trends", "📰 Dispatch Archive"])
 
 with tab1:
     st.subheader("Cabinet Ministers, Loyalty & Ambition")
     st.caption("Manage key government departments and ministerial loyalty to prevent public resignations.")
     
-    for role, data in state["cabinet"].items():
-        col_a, col_b, col_c = st.columns([2, 2, 3])
-        with col_a:
-            st.markdown(f"**{role}**")
-            st.caption(f"Minister: {data['name']}")
-        with col_b:
+    cab_items = list(state["cabinet"].items())
+    cab_cols = st.columns(len(cab_items))
+    
+    for idx, (role, data) in enumerate(cab_items):
+        with cab_cols[idx]:
             loyalty_color = "🟢" if data['loyalty'] > 60 else "🔴"
-            st.markdown(f"{loyalty_color} **Loyalty:** {data['loyalty']}%")
+            
+            st.markdown(f"""
+            <div class="sc-card" style="min-height: 220px; padding: 1rem; border-radius: 10px;">
+                <div style="font-weight: 800; font-size: 1rem; color: #38bdf8; margin-bottom: 0.2rem;">{role}</div>
+                <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.8rem;">Minister: <b>{data['name']}</b></div>
+                <div style="font-size: 0.85rem; margin-bottom: 0.3rem;">{loyalty_color} <b>Loyalty:</b> {data['loyalty']}%</div>
+            """, unsafe_allow_html=True)
+            
             st.progress(max(0, min(100, data['loyalty'])) / 100)
-        with col_c:
-            st.markdown(f"⚡ **Competence:** {data['competence']}% | 🔥 **Ambition:** {data['ambition']}%")
-        st.divider()
+            
+            st.markdown(f"""
+                <div style="font-size: 0.8rem; color: #cbd5e1; margin-top: 0.8rem;">
+                    ⚡ <b>Competence:</b> {data['competence']}%<br>
+                    🔥 <b>Ambition:</b> {data['ambition']}%
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.divider()
     
     st.markdown("### 🔄 Execute Cabinet Reshuffle")
     res_col1, res_col2 = st.columns(2)
