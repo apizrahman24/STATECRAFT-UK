@@ -157,16 +157,18 @@ with tab1:
     st.divider()
     
     st.markdown("### 🔄 Execute Cabinet Reshuffle")
-    res_col1, res_col2 = st.columns(2)
+    res_col1, res_col2 = st.columns([2, 1])
     with res_col1:
         target_minister = st.selectbox("Select Minister to Reassign", list(state["cabinet"].keys()))
     with res_col2:
+        # Pushes button down to align vertically with the selectbox
+        st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
         if st.button("⚖️ Realign Portfolio (+5 Loyalty, -5 Ambition)", use_container_width=True):
             state["cabinet"][target_minister]["loyalty"] = min(100, state["cabinet"][target_minister]["loyalty"] + 5)
             state["cabinet"][target_minister]["ambition"] = max(0, state["cabinet"][target_minister]["ambition"] - 5)
             st.success(f"Successfully restructured {target_minister}'s portfolio.")
             st.rerun()
-
+            
 with tab2:
     st.subheader("Ruling Party Factional Breakdown & Happiness")
     st.caption("Keep faction happiness above 45% to prevent coordinated backbench rebellions and leadership threats.")
