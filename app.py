@@ -26,10 +26,33 @@ if "game" not in st.session_state:
 
 if st.session_state.game is None:
     st.title("🇬🇧 STATECRAFT: Westminster Executive")
-    st.subheader("Govern the United Kingdom through complex multi-layered political crises.")
+    st.subheader("Win the election, form your government, and steer the United Kingdom.")
     st.divider()
-    pm_name = st.text_input("Prime Minister Name", "Andy Burnham")
-    party = st.selectbox("Party Affiliation", ["Labour Party"])
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        pm_name = st.text_input("Prime Minister Name", "Andy Burnham")
+        party = st.selectbox("Ruling Party / Political Alignment", [
+            "Labour Party",
+            "Conservative Party",
+            "Liberal Democrats",
+            "Reform UK",
+            "Green Party"
+        ])
+    with col2:
+        st.markdown("### 🏛️ Government Mandate")
+        if party == "Labour Party":
+        # Based on 2024 UK general election composition
+            st.caption("Center-Left • Large Parliamentary Majority (348 seats) • Focus on Public Services & Growth")
+        elif party == "Conservative Party":
+            st.caption("Centre-Right • Opposition / Reduced Seats (121 seats) • Focus on Tax Cuts & Free Enterprise")
+        elif party == "Liberal Democrats":
+            st.caption("Centrist / Social Liberal • Third Party (72 seats) • Focus on Electoral Reform & Public Investment")
+        elif party == "Reform UK":
+            st.caption("Right-Wing Populist • Insurgent Force (5 seats) • Focus on Border Control & State Sovereignty")
+        else:
+            st.caption("Eco-Socialist / Left-Wing • Progressive Bloc (4 seats) • Focus on Green Transition & Wealth Redistribution")
+
     if st.button("🏛️ ENTER 10 DOWNING STREET", type="primary", use_container_width=True):
         st.session_state.game = create_uk_game(pm_name, party)
         st.rerun()
@@ -44,7 +67,7 @@ with st.sidebar:
     st.markdown("### 🏛️ 10 Downing Street")
     st.write(f"**PM:** {game['leader']}")
     st.write(f"**Party:** {game['ruling_party']}")
-    st.write(f"**Majority:** {state['majority_seats']} seats")
+    st.write(f"**Majority Seats:** {state['majority_seats']}")
     st.caption(f"📅 Month {state['month']}, Year {state['year']}")
     st.divider()
     if st.button("🔄 Reset Campaign", use_container_width=True):
@@ -55,7 +78,7 @@ with st.sidebar:
 st.markdown(f"""
 <div class="sc-hero">
     <div style="color: #e2b764; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Turn {state['turn']} • Strategic Command</div>
-    <div style="font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900;">United Kingdom Government</div>
+    <div style="font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900;">United Kingdom Government ({game['ruling_party']})</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -99,7 +122,7 @@ for i, (label, val) in enumerate(snapshot):
         </div>
         """, unsafe_allow_html=True)
 
-# Tabs for Cabinet & Devolved Nations
+# Tabs
 tab1, tab2, tab3 = st.tabs(["🏛️ Executive Cabinet", "🗺️ Devolved Administrations", "📰 Dispatch Archive"])
 
 with tab1:
