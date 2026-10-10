@@ -98,18 +98,27 @@ def create_uk_game(pm_name, ruling_party):
             "active_dilemma": {
                 "id": "uk_dil_autumn_budget",
                 "title": "The Autumn Budget & Fiscal Headroom Crisis",
-                "description": "The Office for Budget Responsibility (OBR) warns that public pay settlements and energy price volatility have squeezed fiscal headroom down to £7bn.",
+                "description": "The Office for Budget Responsibility (OBR) warns that public pay settlements and energy price volatility have squeezed fiscal headroom down to £7bn. Treasury officials present three fiscal paths.",
                 "choices": [
                     {
                         "label": "Introduce Targeted Wealth and Capital Gains Adjustments",
+                        "elaboration": "Instruct the Chancellor to raise rates on Capital Gains Tax (CGT), carried interest, and high-value dividend yields to fund frontline public spending.",
+                        "pros": "Protects core departmental budgets, unlocks **£8.0bn Fiscal Headroom**, and shrinks national debt.",
+                        "cons": "Triggers fierce backlash from City of London investors and business lobbies (**Public Approval -8.0**, **Media Sentiment -10.0**).",
                         "effects": {"metrics.fiscal_headroom": 8.0, "metrics.debt": -3.0, "metrics.public_support": -8.0, "metrics.media_sentiment": -10.0}
                     },
                     {
                         "label": "Implement Severe Whitehall Departmental Spending Freezes",
+                        "elaboration": "Enforce strict nominal budget freezes across non-protected Whitehall departments (Transport, Justice, Local Government) to enforce fiscal discipline.",
+                        "pros": "Preserves Treasury credibility, signals fiscal orthodoxy to bond markets, and lowers public debt (**Debt -4.0**).",
+                        "cons": "Starves public infrastructure, accelerates local council distress, and worsens waiting lists (**NHS Backlog +6.0**, **Media Sentiment -12.0**).",
                         "effects": {"metrics.fiscal_headroom": 6.0, "metrics.debt": -4.0, "metrics.nhs_backlog": 6.0, "metrics.media_sentiment": -12.0}
                     },
                     {
                         "label": "Accept Deficit Expansion & Gilt Yield Risk",
+                        "elaboration": "Bypass immediate fiscal tightening by increasing gilt sales, borrowing through the Debt Management Office to shield households from tax increases.",
+                        "pros": "Avoids unpopular spending cuts or tax hikes, providing short-term political breathing room (**Public Support +4.0**).",
+                        "cons": "Spikes national borrowing (**Debt +5.0**), fuels sticky inflationary pressures (**Inflation +1.2%**), and risks spiking gilt yields.",
                         "effects": {"metrics.debt": 5.0, "metrics.inflation": 1.2, "metrics.public_support": 4.0, "metrics.media_sentiment": 5.0}
                     }
                 ]
