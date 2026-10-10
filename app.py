@@ -210,7 +210,7 @@ with tab5:
         st.caption(ev["description"])
         st.divider()
 
-# Direct Cabinet Action (5 Columns in 1 Row with Active Green Highlight)
+# Direct Cabinet Action (5 Columns in 1 Row with Clean HTML Rendering)
 st.subheader("🎯 Direct Cabinet Action")
 st.caption("Select and execute executive directives to manage national metrics.")
 
@@ -229,20 +229,22 @@ for idx, (p_name, p_data) in enumerate(pol_items):
         status_badge = "<div style='color: #22c55e; font-weight: 800; font-size: 0.75rem; margin-bottom: 0.2rem;'>✅ ACTIVE DIRECTIVE</div>" if is_active else ""
         
         elaboration = p_data.get("elaboration", p_data.get("description", ""))
-        pros = p_data.get("pros", "Improves specific policy metrics.")
-        cons = p_data.get("cons", "Carries metric tradeoffs.")
+        # Replace **bold** with <b>bold</b> so HTML doesn't break
+        pros = p_data.get("pros", "Improves specific policy metrics.").replace("**", "")
+        cons = p_data.get("cons", "Carries metric tradeoffs.").replace("**", "")
         
-        st.markdown(f"""
-        <div class="sc-card" style="min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.75rem; border: {border_style}; background: {bg_style};">
-            <div>
-                {status_badge}
-                <div style="font-weight: 800; font-size: 0.88rem; color: #38bdf8; margin-bottom: 0.3rem;">{p_name}</div>
-                <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.3;">{elaboration}</div>
-                <div style="font-size: 0.72rem; margin-bottom: 0.2rem;">🟢 <b>Pros:</b> {pros}</div>
-                <div style="font-size: 0.72rem; margin-bottom: 0.5rem;">🔴 <b>Cons:</b> {cons}</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        card_html = f"""
+<div class="sc-card" style="min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.75rem; border: {border_style}; background: {bg_style};">
+    <div>
+        {status_badge}
+        <div style="font-weight: 800; font-size: 0.88rem; color: #38bdf8; margin-bottom: 0.3rem;">{p_name}</div>
+        <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.3;">{elaboration}</div>
+        <div style="font-size: 0.72rem; margin-bottom: 0.2rem;">🟢 <b>Pros:</b> {pros}</div>
+        <div style="font-size: 0.72rem; margin-bottom: 0.5rem;">🔴 <b>Cons:</b> {cons}</div>
+    </div>
+</div>
+"""
+        st.markdown(card_html, unsafe_allow_html=True)
         
         btn_label = "✅ ACTIVE" if is_active else "⚡ ENACT"
         if st.button(btn_label, key=f"pol_btn_{idx}", use_container_width=True, type="secondary" if is_active else "primary"):
