@@ -18,7 +18,6 @@ st.markdown("""
 .sc-card { background: rgba(15, 23, 42, 0.75); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem; margin-bottom: 0.6rem; }
 .sc-value { font-size: 1.4rem; font-weight: 800; color: #f1f5f9; }
 .sc-alert { border-left: 4px solid #ef4444; background: rgba(239,68,68,0.12); padding: 1.2rem; border-radius: 8px; margin-bottom: 1rem; }
-.sc-choice-box { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -47,7 +46,7 @@ game = st.session_state.game
 state = game["state"]
 metrics = state["metrics"]
 
-# Inside your sidebar block in app.py:
+# Sidebar with Autoplay Stress-Test Mode
 with st.sidebar:
     st.markdown("### 🏛️ 10 Downing Street")
     st.write(f"**PM:** {game['leader']}")
@@ -55,27 +54,23 @@ with st.sidebar:
     st.write(f"**Working Majority:** {state['majority_seats']} seats")
     st.caption(f"📅 Month {state['month']}, Year {state['year']}")
     st.divider()
-
+    
     # --- AUTOPLAY / STRESS TEST CONTROLS ---
     st.markdown("### ⚡ Stress-Test Engine")
     autoplay = st.toggle("Autoplay Simulation", value=False)
     speed_steps = st.slider("Months per tick", 1, 12, 1)
     
     if autoplay:
-        if state.get("active_dilemma") is not None:
-            # Auto-resolve dilemmas during stress test by picking Option 1
-            from engine.events import resolve_dilemma
-            resolve_dilemma(state, 0)
-        
-        # Advance multiple months automatically
         for _ in range(speed_steps):
+            if state.get("active_dilemma") is not None:
+                resolve_dilemma(state, 0)
+            
             state["month"] += 1
             if state["month"] > 12:
                 state["month"] = 1
                 state["year"] += 1
             advance_turn(game)
             
-        # FIX: Change st.rer() to st.rerun()
         st.rerun()
     # ---------------------------------------
 
@@ -148,7 +143,7 @@ for i, (label, val) in enumerate(snapshot):
         </div>
         """, unsafe_allow_html=True)
 
-# Tabs with Visual UIs (Cabinet Columns, Faction Happiness Meters, Trend Charts)
+# Tabs with Visual UIs
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏛️ Executive Cabinet", "👥 Backbench Factions", "🗺️ Devolved Administrations", "📈 Economic Trends", "📰 Dispatch Archive"])
 
 with tab1:
@@ -186,14 +181,13 @@ with tab1:
     with res_col1:
         target_minister = st.selectbox("Select Minister to Reassign", list(state["cabinet"].keys()))
     with res_col2:
-        # Pushes button down to align vertically with the selectbox
         st.markdown("<div style='margin-top: 28px;'></div>", unsafe_allow_html=True)
         if st.button("⚖️ Realign Portfolio (+5 Loyalty, -5 Ambition)", use_container_width=True):
             state["cabinet"][target_minister]["loyalty"] = min(100, state["cabinet"][target_minister]["loyalty"] + 5)
             state["cabinet"][target_minister]["ambition"] = max(0, state["cabinet"][target_minister]["ambition"] - 5)
             st.success(f"Successfully restructured {target_minister}'s portfolio.")
             st.rerun()
-            
+
 with tab2:
     st.subheader("Ruling Party Factional Breakdown & Happiness")
     st.caption("Keep faction happiness above 45% to prevent coordinated backbench rebellions and leadership threats.")
@@ -236,11 +230,10 @@ with tab5:
         st.caption(ev["description"])
         st.divider()
 
-# Policy Deck & Turn Advancement
+# Direct Cabinet Action (5 Columns in 1 Row)
 st.subheader("🎯 Direct Cabinet Action")
 st.caption("Select and execute executive directives to manage national metrics.")
 
-# Display all 5 policies side-by-side in a single row of 5 columns
 pol_items = list(POLICIES.items())
 p_cols = st.columns(len(pol_items))
 
@@ -251,12 +244,12 @@ for idx, (p_name, p_data) in enumerate(pol_items):
         cons = p_data.get("cons", "Carries metric tradeoffs.")
         
         st.markdown(f"""
-        <div class="sc-card" style="min-height: 280px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.75rem;">
+        <div class="sc-card" style="min-height: 290px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 0.5rem; padding: 0.75rem;">
             <div>
-                <div style="font-weight: 800; font-size: 0.9rem; color: #38bdf8; margin-bottom: 0.3rem;">{p_name}</div>
-                <div style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.3;">{elaboration}</div>
-                <div style="font-size: 0.75rem; margin-bottom: 0.2rem;">🟢 <b>Pros:</b> {pros}</div>
-                <div style="font-size: 0.75rem; margin-bottom: 0.5rem;">🔴 <b>Cons:</b> {cons}</div>
+                <div style="font-weight: 800; font-size: 0.88rem; color: #38bdf8; margin-bottom: 0.3rem;">{p_name}</div>
+                <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.3;">{elaboration}</div>
+                <div style="font-size: 0.72rem; margin-bottom: 0.2rem;">🟢 <b>Pros:</b> {pros}</div>
+                <div style="font-size: 0.72rem; margin-bottom: 0.5rem;">🔴 <b>Cons:</b> {cons}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -264,31 +257,6 @@ for idx, (p_name, p_data) in enumerate(pol_items):
         if st.button(f"⚡ ENACT", key=f"pol_btn_{idx}", use_container_width=True, type="primary"):
             apply_policy(game, p_name)
             st.rerun()
-
-st.divider()
-
-if state.get("active_dilemma") is not None:
-    st.warning("⚠️ You must resolve the active cabinet crisis above before advancing the month!")
-else:
-    if st.button("⏩ ADVANCE MONTH", type="primary", use_container_width=True):
-        state["month"] += 1
-        if state["month"] > 12:
-            state["month"] = 1
-            state["year"] += 1
-        advance_turn(game)
-        st.rerun()
-st.divider()
-
-if state.get("active_dilemma") is not None:
-    st.warning("⚠️ You must resolve the active cabinet crisis above before advancing the month!")
-else:
-    if st.button("⏩ ADVANCE MONTH", type="primary", use_container_width=True):
-        state["month"] += 1
-        if state["month"] > 12:
-            state["month"] = 1
-            state["year"] += 1
-        advance_turn(game)
-        st.rerun()
 
 st.divider()
 
